@@ -1,0 +1,48 @@
+name: Build & Publish Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Nombre del Tag para el Release (ej. v2.1.0)'
+        required: true
+        default: 'v2.1.0'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Linux AppImage & Windows Portable EXE
+        run: |
+          npx electron-builder --linux AppImage --win portable --publish never
+          for f in dist/*.exe; do [ -f "$f" ] && mv "$f" dist/MinecraftTikTokLive-Windows-Portable.exe; done
+          for f in dist/*.AppImage; do [ -f "$f" ] && mv "$f" dist/MinecraftTikTokLive-Linux.AppImage; done
+
+      - name: Create GitHub Release and Attach Binaries
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
+          name: "Minecraft x TikTok Live Studio (${{ github.event.inputs.tag_name || github.ref_name }})"
+          generate_release_notes: true
+          files: |
+            dist/MinecraftTikTokLive-Windows-Portable.exe
+            dist/MinecraftTikTokLive-Linux.AppImage
+

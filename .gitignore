@@ -1,0 +1,64 @@
+# ====================================================
+# Credenciales y variables de entorno (Información delicada)
+# ====================================================
+.env
+.env.*
+!.env.example
+
+# ====================================================
+# Secretos, llaves, certificados y sesiones de TikTok/RCON
+# ====================================================
+*.pem
+*.key
+*.crt
+*.cert
+*secret*
+*credentials*
+cookies.json
+session.json
+
+# ====================================================
+# Archivos de servidor de Minecraft y configuración RCON
+# (Por si instalas el servidor dentro de esta carpeta)
+# ====================================================
+server/
+minecraft-server/
+server.jar
+paper*.jar
+spigot*.jar
+purpur*.jar
+**/server.properties
+**/rcon.properties
+**/usercache.json
+**/whitelist.json
+**/ops.json
+**/banned-*.json
+
+# ====================================================
+# Contexto local del asistente IA
+# ====================================================
+GEMINI.md
+.gemini/
+
+# ====================================================
+# Dependencias y registros (Node.js)
+# ====================================================
+node_modules/
+dist/
+*.desktop
+config/.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# ====================================================
+# Archivos del sistema operativo y editores
+# ====================================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+

@@ -1,0 +1,81 @@
+{
+  "_comment": "Variables disponibles en los comandos: {player} (tu usuario en Minecraft o @p), {user} (quien envió el regalo en TikTok), {giftName} (nombre del regalo), {repeatCount} (cantidad enviada en combo). El comando 'execute at {player} run summon minecraft:<mob> ~ ~ ~' invoca al mob en la posición exacta del jugador dentro del mundo.",
+  "gifts": {
+    "Rose": {
+      "description": "Spawnea un Zombie cerca del jugador",
+      "scaleWithCombo": true,
+      "commands": [
+        "say [TikTok] ¡{user} envió {repeatCount}x Rosa! ¡Un Zombie aparece junto a {player}!",
+        "execute at {player} run summon minecraft:zombie ~ ~ ~"
+      ]
+    },
+    "You're awesome": {
+      "description": "Da una Manzana Dorada curativa al jugador",
+      "scaleWithCombo": true,
+      "commands": [
+        "say [TikTok] ¡{user} envió {repeatCount}x You're awesome! Dando Manzana Dorada a {player}.",
+        "give {player} minecraft:golden_apple 1"
+      ]
+    },
+    "GG": {
+      "description": "Spawnea un Creeper cerca del jugador",
+      "scaleWithCombo": true,
+      "commands": [
+        "say [TikTok] ¡{user} envió {repeatCount}x GG! ¡Cuidado con el Creeper, {player}!",
+        "execute at {player} run summon minecraft:creeper ~ ~ ~"
+      ]
+    },
+    "Finger Heart": {
+      "description": "Da una Espada de Diamante al jugador",
+      "scaleWithCombo": false,
+      "commands": [
+        "say [TikTok] ¡{user} envió un Corazón! {player} recibe una Espada de Diamante.",
+        "give {player} minecraft:diamond_sword 1"
+      ]
+    },
+    "Doughnut": {
+      "description": "Spawnea una horda de 2 Esqueletos y 1 Breeze",
+      "scaleWithCombo": true,
+      "commands": [
+        "say [TikTok] ¡ALERTA! ¡{user} lanzó una Dona! ¡Emboscada contra {player}!",
+        "execute at {player} run summon minecraft:skeleton ~ ~ ~",
+        "execute at {player} run summon minecraft:skeleton ~ ~ ~",
+        "execute at {player} run summon minecraft:breeze ~ ~ ~"
+      ]
+    },
+    "Corgi": {
+      "description": "Jefe letal: Invoca un Warden junto al jugador",
+      "scaleWithCombo": false,
+      "commands": [
+        "say [TikTok] ¡PELIGRO EXTREMO! ¡{user} invocó un WARDEN para {player}!",
+        "execute at {player} run summon minecraft:warden ~ ~ ~"
+      ]
+    }
+  },
+  "specialEvents": {
+    "likeMilestone": {
+      "enabled": true,
+      "everyLikes": 100,
+      "commands": [
+        "say [TikTok] ¡Llegamos a otros 100 Likes gracias a {user}! Entregando Tótem de la Inmortalidad a {player}.",
+        "give {player} minecraft:totem_of_undying 1"
+      ]
+    },
+    "follow": {
+      "enabled": true,
+      "commands": [
+        "say [TikTok] ¡Gracias por seguirme, {user}! Spawneando un Creeper sorpresa...",
+        "execute at {player} run summon minecraft:creeper ~ ~ ~"
+      ]
+    }
+  },
+  "defaultGift": {
+    "enabled": true,
+    "description": "Acción por defecto si envían un regalo que no está en la lista",
+    "commands": [
+      "say [TikTok] ¡Gracias {user} por enviar {repeatCount}x {giftName}!",
+      "execute at {player} run summon minecraft:skeleton ~ ~ ~"
+    ]
+  }
+}
+

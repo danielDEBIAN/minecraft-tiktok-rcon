@@ -1,0 +1,1645 @@
+:root {
+  /* Paleta Minimalista estilo Minecraft (Colores 100% Sólidos · SIN Gradientes) */
+  --bg-abyss: #111110;
+  --bg-main: #181716;
+  --bg-panel: #21201e;
+  --bg-card: #282724;
+  --bg-card-hover: #32302d;
+  --bg-elevated: #383632;
+  --bg-input: #121211;
+
+  /* Bordes de piedra y bloques estilo Minecraft */
+  --border-stone: #3b3935;
+  --border-steel: #4f4c47;
+  --border-light: #6b6861;
+  --border-green: #3c8527;
+  --border-green-bright: #52a535;
+  --border-gold: #ffaa00;
+  --border-gold-bright: #ffcb47;
+
+  /* Textos */
+  --text-main: #f2f2f0;
+  --text-gold: #ffaa00;
+  --text-green: #6cc349;
+  --text-muted: #b0ada5;
+  --text-dim: #7c7972;
+
+  /* Acentos Minecraft */
+  --mc-green: #3c8527;
+  --mc-green-hover: #499e30;
+  --mc-green-dark: #28591a;
+  --mc-emerald: #2ebd6b;
+  --mc-redstone: #b92b27;
+  --mc-redstone-hover: #d13430;
+
+  --font-display: 'Silkscreen', 'JetBrains Mono', monospace;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Estilo pixel / bloques sin bordes redondeados */
+  --radius: 0px;
+  --radius-sm: 0px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  min-height: 100vh;
+  line-height: 1.48;
+}
+
+/* Barra superior de bloque de pasto / esmeralda sólido */
+.hytale-top-trim {
+  height: 6px;
+  width: 100%;
+  background-color: var(--mc-green);
+  border-bottom: 2px solid var(--mc-green-dark);
+}
+
+/* Barra superior */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  padding: 1rem 2rem;
+  background-color: var(--bg-panel);
+  border-bottom: 2px solid var(--border-stone);
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.brand-logo {
+  width: 48px;
+  height: 48px;
+  background-color: var(--bg-card);
+  border: 2px solid var(--border-steel);
+  box-shadow: inset 0 -3px 0 var(--bg-abyss);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.topbar-brand h1 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-main);
+}
+
+.accent-x {
+  color: var(--text-green);
+  font-weight: 700;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.topbar-settings {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  background-color: var(--bg-card);
+  padding: 0.55rem 0.8rem;
+  border: 2px solid var(--border-stone);
+}
+
+.setting-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  position: relative;
+}
+
+.setting-field label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.setting-field input {
+  background-color: var(--bg-input);
+  border: 2px solid var(--border-steel);
+  color: var(--text-main);
+  padding: 0.42rem 0.7rem;
+  font-size: 0.84rem;
+  width: 185px;
+  transition: width 0.18s ease, border-color 0.12s ease;
+}
+
+.setting-field:hover input,
+.setting-field input:hover,
+.setting-field input:focus {
+  width: 240px;
+  outline: none;
+  border-color: var(--border-green-bright);
+  background-color: var(--bg-abyss);
+}
+
+/* Tooltip flotante al hacer hover sobre los campos superiores */
+.setting-field[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 250px;
+  max-width: 340px;
+  background-color: var(--bg-abyss);
+  color: var(--text-main);
+  border: 2px solid var(--border-steel);
+  padding: 0.45rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 60;
+}
+
+.setting-field[data-tooltip]:hover::after,
+.setting-field[data-tooltip]:focus-within::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.status-pill {
+  padding: 0.42rem 0.8rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  border: 2px solid var(--border-steel);
+  cursor: pointer;
+  background-color: var(--bg-elevated);
+  color: var(--text-main);
+}
+
+.status-pill.real {
+  background-color: var(--mc-green-dark);
+  border-color: var(--border-green-bright);
+  color: #ffffff;
+}
+
+.status-pill.mock {
+  background-color: #4a3710;
+  border-color: var(--border-gold);
+  color: var(--text-gold);
+}
+
+/* Panel de Estado en Tiempo Real (RCON + TikTok Live) */
+.status-banner-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.8rem 2rem;
+  background-color: var(--bg-main);
+  border-bottom: 2px solid var(--border-stone);
+}
+
+@media (max-width: 980px) {
+  .status-banner-bar {
+    grid-template-columns: 1fr;
+  }
+}
+
+.status-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0.7rem 0.95rem;
+  background-color: var(--bg-panel);
+  border: 2px solid var(--border-stone);
+}
+
+.status-orb {
+  width: 12px;
+  height: 12px;
+  margin-top: 0.32rem;
+  flex-shrink: 0;
+  background-color: #6b7280;
+  border: 2px solid var(--bg-abyss);
+}
+
+.status-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.status-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.status-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.status-msg {
+  font-size: 0.77rem;
+  color: var(--text-muted);
+}
+
+/* Estados visuales de conexión (100% sólidos) */
+.status-card.status-online,
+.status-card.status-live {
+  border-color: var(--border-green-bright);
+  background-color: #192618;
+}
+
+.status-card.status-online .status-orb,
+.status-card.status-live .status-orb {
+  background-color: var(--border-green-bright);
+}
+
+.status-card.status-online .status-title,
+.status-card.status-live .status-title {
+  color: var(--text-green);
+}
+
+.status-card.status-mock {
+  border-color: var(--border-gold);
+  background-color: #292112;
+}
+
+.status-card.status-mock .status-orb {
+  background-color: var(--border-gold);
+}
+
+.status-card.status-mock .status-title {
+  color: var(--text-gold);
+}
+
+.status-card.status-offline,
+.status-card.status-error,
+.status-card.status-unconfigured {
+  border-color: var(--mc-redstone);
+  background-color: #291616;
+}
+
+.status-card.status-offline .status-orb,
+.status-card.status-error .status-orb,
+.status-card.status-unconfigured .status-orb {
+  background-color: #ef4444;
+}
+
+.status-card.status-offline .status-title,
+.status-card.status-error .status-title,
+.status-card.status-unconfigured .status-title {
+  color: #fca5a5;
+}
+
+.status-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* =========================================================
+   MENÚ DE PESTAÑAS ESTILO HOTBAR MINECRAFT
+   - Centrado
+   - En una sola línea (sin saltos)
+   - Basado en iconos que revelan el título completo en hover
+   ========================================================= */
+.tabs-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding: 0.55rem 1rem;
+  background-color: var(--bg-panel);
+  border-bottom: 2px solid var(--border-stone);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs-center {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  gap: 0.35rem;
+  background-color: var(--bg-abyss);
+  padding: 0.3rem;
+  border: 2px solid var(--border-steel);
+}
+
+.tabs-divider {
+  width: 2px;
+  height: 28px;
+  background-color: var(--border-steel);
+  margin: 0 0.2rem;
+  flex-shrink: 0;
+}
+
+.tab-btn,
+.tab-action-btn {
+  font-family: var(--font-display);
+  background-color: var(--bg-card);
+  color: var(--text-muted);
+  border: 2px solid var(--border-stone);
+  height: 42px;
+  padding: 0 0.75rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  flex-shrink: 0;
+  gap: 0;
+  transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+}
+
+.tab-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* El título permanece oculto por defecto y aparece completo al hacer hover */
+.tab-label {
+  display: inline-block;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-left: 0;
+  transition:
+    max-width 0.22s ease,
+    opacity 0.16s ease,
+    margin-left 0.18s ease;
+}
+
+.tab-btn:hover .tab-label,
+.tab-btn:focus-visible .tab-label,
+.tab-action-btn:hover .tab-label,
+.tab-action-btn:focus-visible .tab-label {
+  max-width: 340px;
+  opacity: 1;
+  margin-left: 0.5rem;
+}
+
+.tab-btn:hover,
+.tab-btn:focus-visible {
+  color: var(--text-main);
+  background-color: var(--bg-card-hover);
+  border-color: var(--border-light);
+  outline: none;
+}
+
+.tab-btn.active {
+  color: #ffffff;
+  background-color: var(--mc-green-dark);
+  border-color: var(--border-green-bright);
+}
+
+.tab-action-btn {
+  background-color: var(--mc-green);
+  color: #ffffff;
+  border-color: var(--border-green-bright);
+}
+
+.tab-action-btn:hover,
+.tab-action-btn:focus-visible {
+  background-color: var(--mc-green-hover);
+  border-color: #ffffff;
+  color: #ffffff;
+  outline: none;
+}
+
+.badge {
+  font-family: var(--font-mono);
+  background-color: var(--bg-abyss);
+  border: 1px solid var(--border-steel);
+  color: var(--text-gold);
+  padding: 0.08rem 0.4rem;
+  margin-left: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Botones sólidos estilo Minecraft */
+.btn {
+  font-family: var(--font-display);
+  padding: 0.52rem 0.95rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 2px solid var(--border-steel);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.45);
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  letter-spacing: 0.02em;
+}
+
+.btn-primary {
+  background-color: var(--mc-green);
+  color: #ffffff;
+  border-color: var(--border-green-bright);
+}
+
+.btn-primary:hover {
+  background-color: var(--mc-green-hover);
+  border-color: #ffffff;
+}
+
+.btn-secondary {
+  background-color: var(--bg-elevated);
+  color: var(--text-main);
+  border-color: var(--border-steel);
+}
+
+.btn-secondary:hover {
+  background-color: #46443f;
+  border-color: var(--text-gold);
+  color: var(--text-gold);
+}
+
+.btn-success {
+  background-color: #235929;
+  color: #bbf7d0;
+  border-color: var(--border-green-bright);
+}
+
+.btn-success:hover {
+  background-color: #2d7335;
+  border-color: #86efac;
+  color: #ffffff;
+}
+
+.btn-danger {
+  background-color: #6e1d1b;
+  color: #fecaca;
+  border-color: var(--mc-redstone);
+}
+
+.btn-danger:hover {
+  background-color: var(--mc-redstone);
+  border-color: #fca5a5;
+  color: #ffffff;
+}
+
+.btn-sm {
+  padding: 0.38rem 0.7rem;
+  font-size: 0.68rem;
+}
+
+.btn-lg {
+  padding: 0.68rem 1.35rem;
+  font-size: 0.82rem;
+}
+
+/* Contenedor principal */
+.main-container {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 1.6rem 2rem 3.2rem;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 2px solid var(--border-stone);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.section-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: 0.03em;
+}
+
+.section-header p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.mt-lg {
+  margin-top: 2.5rem;
+}
+
+.mt-sm {
+  margin-top: 0.6rem;
+}
+
+/* Pestaña 4: Panel de Control y Configuración del Servidor de Minecraft */
+.server-power-buttons {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.server-folder-bar {
+  margin-bottom: 1.2rem;
+}
+
+.server-folder-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 280px;
+}
+
+.folder-input-group {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.folder-input-group input {
+  flex: 1;
+  min-width: 240px;
+  background-color: var(--bg-input);
+  border: 2px solid var(--border-steel);
+  color: var(--text-main);
+  padding: 0.45rem 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.83rem;
+}
+
+.server-grid-layout {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+  .server-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.server-panel-card {
+  background-color: var(--bg-panel);
+  border: 2px solid var(--border-stone);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.panel-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--border-stone);
+}
+
+.panel-card-header h3 {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  color: var(--text-gold);
+}
+
+.quick-world-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.console-log-box {
+  background-color: var(--bg-abyss);
+  border: 2px solid var(--border-stone);
+  padding: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.77rem;
+  color: var(--text-green);
+  height: 360px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.console-input-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.console-input-row input {
+  flex: 1;
+  background-color: var(--bg-input);
+  border: 2px solid var(--border-steel);
+  color: var(--text-main);
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+}
+
+.server-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.form-row-3 {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 0.9fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 680px) {
+  .form-row-2,
+  .form-row-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group select {
+  background-color: var(--bg-input);
+  border: 2px solid var(--border-steel);
+  color: var(--text-main);
+  padding: 0.46rem 0.7rem;
+  font-size: 0.84rem;
+}
+
+.world-toggles-box {
+  background-color: var(--bg-abyss);
+  border: 2px solid var(--border-stone);
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.toggles-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+
+@media (max-width: 680px) {
+  .toggles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tarjetas de Reglas Configuradas (Bloques minimalistas estilo Minecraft) */
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1.1rem;
+}
+
+.rule-card {
+  background-color: var(--bg-panel);
+  border: 2px solid var(--border-stone);
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.9rem;
+  transition: border-color 0.14s ease, background-color 0.14s ease;
+}
+
+.rule-card:hover {
+  border-color: var(--border-green-bright);
+  background-color: var(--bg-card);
+}
+
+.rule-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.rule-gift-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.rule-gift-thumb {
+  width: 54px;
+  height: 54px;
+  background-color: var(--bg-abyss);
+  border: 2px solid var(--border-steel);
+  object-fit: contain;
+  padding: 4px;
+}
+
+.rule-gift-title {
+  font-family: var(--font-display);
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.rule-gift-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.coin-tag {
+  background-color: #2b2210;
+  border: 1px solid var(--border-gold);
+  color: var(--text-gold);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.1rem 0.5rem;
+}
+
+.combo-tag {
+  background-color: #162b1c;
+  border: 1px solid var(--border-green-bright);
+  color: var(--text-green);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.1rem 0.5rem;
+}
+
+.rule-desc {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+/* Visualización de Mobs dentro de cada regla */
+.rule-mobs-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  background-color: var(--bg-abyss);
+  border: 2px solid var(--border-stone);
+  padding: 0.65rem;
+}
+
+.rule-mob-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.3rem 0.4rem;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-stone);
+}
+
+.rule-mob-chip img {
+  width: 42px;
+  height: 42px;
+  background-color: var(--bg-abyss);
+  object-fit: contain;
+  border: 1px solid var(--border-steel);
+  padding: 2px;
+  image-rendering: pixelated;
+}
+
+.rule-mob-chip-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.rule-mob-chip-name {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-gold);
+}
+
+.rule-mob-chip-id {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.rule-cmd-line {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-main);
+  background-color: var(--bg-panel);
+  border-left: 3px solid var(--border-gold);
+  padding: 0.3rem 0.55rem;
+  word-break: break-all;
+}
+
+.rule-card-actions {
+  display: flex;
+  gap: 0.45rem;
+  justify-content: flex-end;
+  border-top: 2px solid var(--border-stone);
+  padding-top: 0.75rem;
+}
+
+/* Barra de búsqueda y filtros de Catálogo */
+.catalog-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.3rem;
+  background-color: var(--bg-panel);
+  padding: 0.95rem 1.15rem;
+  border: 2px solid var(--border-stone);
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background-color: var(--bg-input);
+  border: 2px solid var(--border-steel);
+  padding: 0.48rem 0.8rem;
+  flex: 1;
+  min-width: 260px;
+}
+
+.search-box:focus-within {
+  border-color: var(--border-green-bright);
+}
+
+.search-box input {
+  background-color: transparent;
+  border: none;
+  color: var(--text-main);
+  width: 100%;
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.filter-pills {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.pill {
+  font-family: var(--font-display);
+  background-color: var(--bg-card);
+  color: var(--text-muted);
+  border: 2px solid var(--border-stone);
+  padding: 0.36rem 0.75rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.pill:hover,
+.pill.active {
+  background-color: var(--mc-green-dark);
+  color: #ffffff;
+  border-color: var(--border-green-bright);
+}
+
+/* Cuadrícula de Entidades (Slots de Inventario / Bestiario Minecraft) */
+.entity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  gap: 1rem;
+}
+
+.entity-card {
+  background-color: var(--bg-panel);
+  border: 2px solid var(--border-stone);
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.55rem;
+  position: relative;
+  transition: border-color 0.14s ease, background-color 0.14s ease;
+}
+
+.entity-card:hover {
+  border-color: var(--border-green-bright);
+  background-color: var(--bg-card);
+}
+
+.entity-badge-new {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-family: var(--font-display);
+  background-color: var(--border-gold);
+  color: #111110;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid #ffffff;
+}
+
+.entity-img-wrap {
+  width: 104px;
+  height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-abyss);
+  border: 2px solid var(--border-steel);
+  padding: 8px;
+}
+
+.entity-img-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.entity-title {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.3;
+}
+
+.entity-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.entity-actions {
+  display: flex;
+  gap: 0.4rem;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 0.3rem;
+}
+
+.entity-actions .btn {
+  flex: 1;
+  padding: 0.36rem 0.38rem;
+  font-size: 0.66rem;
+}
+
+/* Modal / Configurador Visual Minimalista estilo Minecraft */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 10, 10, 0.85);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.modal-backdrop.hidden,
+.hidden {
+  display: none !important;
+}
+
+.modal-container {
+  background-color: var(--bg-panel);
+  border: 2px solid var(--border-light);
+  width: 100%;
+  max-width: 1240px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.95rem 1.4rem;
+  background-color: var(--bg-card);
+  border-bottom: 2px solid var(--border-stone);
+}
+
+.modal-header h2 {
+  font-family: var(--font-display);
+  color: var(--text-gold);
+  font-size: 1rem;
+}
+
+.modal-close {
+  font-family: var(--font-display);
+  background-color: var(--bg-elevated);
+  border: 2px solid var(--border-steel);
+  color: var(--text-main);
+  width: 34px;
+  height: 34px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  border-color: var(--mc-redstone);
+  background-color: var(--mc-redstone);
+  color: #ffffff;
+}
+
+.modal-body {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 1.2rem;
+  padding: 1.2rem 1.4rem;
+  overflow-y: auto;
+}
+
+@media (max-width: 960px) {
+  .modal-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.builder-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background-color: var(--bg-main);
+  border: 2px solid var(--border-stone);
+  padding: 1rem;
+}
+
+.step-badge {
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-gold);
+  border-left: 3px solid var(--border-gold);
+  padding-left: 0.55rem;
+}
+
+.trigger-type-selector,
+.reward-type-selector {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.45rem;
+}
+
+.trigger-type-btn,
+.reward-type-btn {
+  font-family: var(--font-display);
+  background-color: var(--bg-card);
+  color: var(--text-muted);
+  border: 2px solid var(--border-stone);
+  padding: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.trigger-type-btn.active,
+.reward-type-btn.active {
+  background-color: var(--mc-green-dark);
+  color: #ffffff;
+  border-color: var(--border-green-bright);
+}
+
+.rule-item-chip {
+  border-color: var(--border-green-bright) !important;
+  background-color: #19291c !important;
+}
+
+.selected-banner {
+  background-color: var(--bg-abyss);
+  border: 2px solid var(--border-steel);
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 60px;
+}
+
+.selected-banner-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.selected-banner-item img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.mini-toolbar {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mini-toolbar input,
+.mini-toolbar select,
+.form-group input,
+.extra-commands-box textarea {
+  background-color: var(--bg-input);
+  border: 2px solid var(--border-steel);
+  color: var(--text-main);
+  padding: 0.46rem 0.7rem;
+  font-size: 0.84rem;
+}
+
+.mini-toolbar input:focus,
+.mini-toolbar select:focus,
+.form-group input:focus,
+.extra-commands-box textarea:focus {
+  outline: none;
+  border-color: var(--border-green-bright);
+}
+
+.mini-toolbar input {
+  flex: 1;
+}
+
+/* Grid de selección dentro del modal */
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(114px, 1fr));
+  gap: 0.5rem;
+  max-height: 255px;
+  overflow-y: auto;
+  padding: 0.45rem;
+  background-color: var(--bg-abyss);
+  border: 2px solid var(--border-stone);
+}
+
+.picker-item {
+  background-color: var(--bg-panel);
+  border: 2px solid var(--border-stone);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.32rem;
+  cursor: pointer;
+}
+
+.picker-item:hover {
+  border-color: var(--border-light);
+  background-color: var(--bg-card);
+}
+
+.picker-item.selected {
+  border-color: var(--border-green-bright);
+  background-color: var(--mc-green-dark);
+}
+
+.picker-item img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.picker-item-name {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.picker-item-sub {
+  font-size: 0.68rem;
+  color: var(--text-gold);
+  font-family: var(--font-mono);
+}
+
+/* Lista de Mobs asignados a la regla en el modal */
+.selected-mobs-panel {
+  background-color: var(--bg-abyss);
+  border: 2px solid var(--border-steel);
+  padding: 0.65rem;
+}
+
+.panel-Label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-gold);
+  margin-bottom: 0.45rem;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #f87171;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.selected-mobs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  max-height: 135px;
+  overflow-y: auto;
+}
+
+.selected-mob-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-steel);
+  padding: 0.36rem 0.6rem;
+}
+
+.selected-mob-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.selected-mob-left img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.selected-mob-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.qty-btn {
+  background-color: var(--bg-elevated);
+  color: var(--text-gold);
+  border: 1px solid var(--border-steel);
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.qty-btn:hover {
+  border-color: var(--border-gold);
+  background-color: var(--bg-card-hover);
+}
+
+.qty-val {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-gold);
+  min-width: 28px;
+  text-align: center;
+}
+
+.rule-options-box,
+.extra-commands-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-group label,
+.extra-commands-box label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-gold);
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.hint {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0.9rem 1.4rem;
+  background-color: var(--bg-card);
+  border-top: 2px solid var(--border-stone);
+}
+
+/* Toast notifications estilo Minecraft */
+.toast-container {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 200;
+}
+
+.toast {
+  background-color: var(--bg-abyss);
+  border: 2px solid var(--border-green-bright);
+  border-left: 5px solid var(--border-green-bright);
+  color: var(--text-main);
+  padding: 0.75rem 1.05rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+/* =========================================================
+   PESTAÑA 5: DOCUMENTACIÓN, GUÍA DE USO Y SECCIÓN DE AYUDA
+   ========================================================= */
+.docs-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.docs-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 1100px) {
+  .docs-steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .docs-steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.docs-step-card {
+  background-color: var(--bg-panel);
+  border: 2px solid var(--border-stone);
+  border-top: 3px solid var(--border-green-bright);
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.docs-step-num {
+  width: 30px;
+  height: 30px;
+  background-color: var(--mc-green);
+  border: 2px solid var(--border-green-bright);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.docs-step-card h3 {
+  font-family: var(--font-display);
+  font-size: 0.84rem;
+  color: var(--text-gold);
+}
+
+.docs-step-card p {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.docs-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+@media (max-width: 1024px) {
+  .docs-two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.docs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.docs-item {
+  background-color: var(--bg-abyss);
+  border: 2px solid var(--border-stone);
+  padding: 0.85rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.docs-item h4 {
+  font-family: var(--font-display);
+  color: var(--text-gold);
+  font-size: 0.82rem;
+}
+
+.docs-item p,
+.docs-item li {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.docs-item ul {
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.docs-code-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.25rem;
+}
+
+.docs-code-table > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-steel);
+  padding: 0.5rem 0.7rem;
+}
+
+.docs-code-table code,
+.docs-step-card code,
+.docs-item code,
+.faq-card code {
+  font-family: var(--font-mono);
+  color: var(--text-gold);
+  background-color: var(--bg-abyss);
+  border: 1px solid var(--border-steel);
+  padding: 0.1rem 0.38rem;
+  font-size: 0.77rem;
+  width: fit-content;
+}
+
+.docs-code-table span {
+  font-size: 0.79rem;
+  color: var(--text-muted);
+}
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.95rem;
+}
+
+@media (max-width: 900px) {
+  .faq-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.faq-card {
+  background-color: var(--bg-panel);
+  border: 2px solid var(--border-stone);
+  border-left: 4px solid var(--border-gold);
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.faq-card h4 {
+  font-family: var(--font-display);
+  color: var(--text-main);
+  font-size: 0.8rem;
+}
+
+.faq-card p,
+.faq-card li {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.faq-card ol {
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.faq-card a,
+.app-footer a {
+  color: var(--text-green);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.faq-card a:hover,
+.app-footer a:hover {
+  color: var(--text-gold);
+}
+
+/* Pie de página con créditos y atribuciones */
+.app-footer {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 2px solid var(--border-stone);
+}
+
+.app-footer-inner {
+  background-color: var(--bg-panel);
+  border: 2px solid var(--border-stone);
+  padding: 0.95rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.app-footer-inner strong {
+  color: var(--text-gold);
+}
+
+.app-footer-disclaimer {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+}

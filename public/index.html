@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minecraft x TikTok Live — Panel de Control RCON</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="hytale-top-trim"></div>
+  <!-- Barra Superior -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-logo" aria-hidden="true">⛏️</div>
+      <div>
+        <h1>MINECRAFT <span class="accent-x">×</span> TIKTOK LIVE</h1>
+        <p class="subtitle">Estudio Visual de Eventos, Regalos, Mobs e Ítems · Java Edition RCON</p>
+      </div>
+    </div>
+
+    <div class="topbar-settings">
+      <div class="setting-field" id="playerFieldWrap" data-tooltip="👤 Jugador Minecraft: Escribe tu nombre exacto dentro del servidor de Minecraft (o déjalo vacío para usar @p)">
+        <label for="envPlayerName">👤 Jugador Minecraft</label>
+        <input
+          type="text"
+          id="envPlayerName"
+          placeholder="Ej. TuNombreEnMinecraft"
+          title="👤 Jugador Minecraft — Escribe aquí tu nombre de usuario dentro del juego (ej. TuNombreEnMinecraft)"
+        />
+      </div>
+      <div class="setting-field" id="tiktokFieldWrap" data-tooltip="🎥 Usuario TikTok: Escribe el @usuario de la cuenta que transmitirá en TikTok Live">
+        <label for="envTiktokUser">🎥 Usuario TikTok</label>
+        <input
+          type="text"
+          id="envTiktokUser"
+          placeholder="Ej. @tu_usuario_tiktok"
+          title="🎥 Usuario TikTok — Escribe aquí tu cuenta de TikTok Live (ej. @tu_usuario_tiktok)"
+        />
+      </div>
+      <div class="setting-field toggle-field">
+        <label for="envMockMode">🛠️ Modo RCON</label>
+        <button type="button" id="envMockModeBtn" class="status-pill">Cargando...</button>
+      </div>
+      <button type="button" id="saveEnvBtn" class="btn btn-secondary btn-sm">💾 Guardar Ajustes</button>
+    </div>
+  </header>
+
+  <!-- Panel de Estado en Tiempo Real (Servidor Minecraft RCON + Directo TikTok Live) -->
+  <section class="status-banner-bar" aria-label="Estado de conexiones">
+    <div id="rconStatusCard" class="status-card status-checking">
+      <div class="status-orb"></div>
+      <div class="status-content">
+        <div class="status-label">🏰 SERVIDOR MINECRAFT (RCON)</div>
+        <div id="rconStatusTitle" class="status-title">Verificando servidor Minecraft...</div>
+        <div id="rconStatusMsg" class="status-msg">Comprobando conexión en 127.0.0.1:25575...</div>
+      </div>
+    </div>
+
+    <div id="tiktokStatusCard" class="status-card status-checking">
+      <div class="status-orb"></div>
+      <div class="status-content">
+        <div class="status-label">📡 ESTADO DE TIKTOK LIVE</div>
+        <div id="tiktokStatusTitle" class="status-title">Verificando usuario de TikTok...</div>
+        <div id="tiktokStatusMsg" class="status-msg">Consultando si la cuenta está en directo (LIVE)...</div>
+      </div>
+    </div>
+
+    <div class="status-actions">
+      <button type="button" id="quickToggleServerBtn" class="btn btn-primary btn-sm">
+        ▶️ Iniciar Servidor Minecraft
+      </button>
+      <button type="button" id="checkStatusNowBtn" class="btn btn-secondary btn-sm">
+        🔄 Verificar Estado Ahora
+      </button>
+    </div>
+  </section>
+
+  <!-- Navegación de Pestañas (Minimalista por Iconos, Centrada y en 1 Sola Línea) -->
+  <nav class="tabs-nav" aria-label="Menú principal">
+    <div class="tabs-center">
+      <button type="button" class="tab-btn active" data-tab="rules" aria-label="Mis Reglas Configuradas">
+        <span class="tab-icon" aria-hidden="true">🎛️</span>
+        <span class="tab-label">Mis Reglas Configuradas</span>
+        <span id="rulesCountBadge" class="badge">0</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="mobs" aria-label="Catálogo de Mobs Minecraft">
+        <span class="tab-icon" aria-hidden="true">👾</span>
+        <span class="tab-label">Catálogo de Mobs Minecraft</span>
+        <span id="mobsCountBadge" class="badge">...</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="items" aria-label="Catálogo de Ítems Minecraft">
+        <span class="tab-icon" aria-hidden="true">🗡️</span>
+        <span class="tab-label">Catálogo de Ítems Minecraft</span>
+        <span id="itemsCountBadge" class="badge">...</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="gifts" aria-label="Catálogo de Regalos TikTok">
+        <span class="tab-icon" aria-hidden="true">🎁</span>
+        <span class="tab-label">Catálogo de Regalos TikTok</span>
+        <span id="giftsCountBadge" class="badge">...</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="server" aria-label="Servidor Minecraft (Control y Ajustes)">
+        <span class="tab-icon" aria-hidden="true">🏰</span>
+        <span class="tab-label">Servidor Minecraft (Control y Ajustes)</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="help" aria-label="Guía y Ayuda">
+        <span class="tab-icon" aria-hidden="true">📖</span>
+        <span class="tab-label">Guía y Ayuda</span>
+      </button>
+      <span class="tabs-divider" aria-hidden="true"></span>
+      <button type="button" id="newRuleBtn" class="tab-action-btn" aria-label="Nueva Regla (Mob o Ítem)">
+        <span class="tab-icon" aria-hidden="true">➕</span>
+        <span class="tab-label">Nueva Regla (Mob o Ítem)</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Contenedor Principal -->
+  <main class="main-container">
+    <!-- TAB 1: MIS REGLAS CONFIGURADAS -->
+    <section id="tab-rules" class="tab-panel active">
+      <div class="section-header">
+        <div>
+          <h2>🎁 Regalos de TikTok Configurados</h2>
+          <p>Selecciona qué mobs spawnean o qué ítems se entregan a tu jugador cuando te envían cada regalo en directo.</p>
+        </div>
+        <button type="button" id="addGiftRuleBtn" class="btn btn-primary">
+          ➕ Agregar Regalo
+        </button>
+      </div>
+
+      <div id="configuredGiftsGrid" class="rules-grid"></div>
+
+      <div class="section-header mt-lg">
+        <div>
+          <h2>⚡ Eventos Especiales del Directo</h2>
+          <p>Configura qué mob aparece o qué objeto recibes cuando alguien te sigue, llegas a una meta de likes o envían un regalo no listado.</p>
+        </div>
+      </div>
+
+      <div id="specialEventsGrid" class="rules-grid special-grid"></div>
+    </section>
+
+    <!-- TAB 2: CATÁLOGO DE MOBS MINECRAFT -->
+    <section id="tab-mobs" class="tab-panel">
+      <div class="catalog-toolbar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="mobCatalogSearch" placeholder="Buscar mob por nombre o ID (ej. Creeper, Zombie, Warden, Breeze, Ender Dragon, Axolotl)..." />
+        </div>
+        <div class="filter-pills" id="mobCategoryPills"></div>
+        <button type="button" id="refreshMobsBtn" class="btn btn-secondary btn-sm" title="Actualizar catálogo de Mobs de Minecraft 1.21+">
+          🔄 Sincronizar Mobs
+        </button>
+      </div>
+      <div id="mobsCatalogGrid" class="entity-grid"></div>
+    </section>
+
+    <!-- TAB 2.5: CATÁLOGO DE ÍTEMS MINECRAFT -->
+    <section id="tab-items" class="tab-panel">
+      <div class="catalog-toolbar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="itemCatalogSearch" placeholder="Buscar ítem por nombre o ID (ej. diamond_sword, golden_apple, totem_of_undying, mace, netherite)..." />
+        </div>
+        <div class="filter-pills" id="itemCategoryPills"></div>
+        <button type="button" id="refreshItemsBtn" class="btn btn-secondary btn-sm" title="Actualizar catálogo de Ítems de Minecraft 1.21+">
+          🔄 Sincronizar Ítems
+        </button>
+      </div>
+      <div id="itemsCatalogGrid" class="entity-grid"></div>
+    </section>
+
+    <!-- TAB 3: CATÁLOGO DE REGALOS TIKTOK -->
+    <section id="tab-gifts" class="tab-panel">
+      <div class="catalog-toolbar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="giftCatalogSearch" placeholder="Buscar regalo de TikTok por nombre (ej. Rose, GG, Corgi, Doughnut, Galaxy)..." />
+        </div>
+        <div class="filter-pills" id="giftPricePills">
+          <button type="button" class="pill active" data-price="all">Todos</button>
+          <button type="button" class="pill" data-price="1">🪙 1 Moneda</button>
+          <button type="button" class="pill" data-price="2-10">🪙 2 - 10</button>
+          <button type="button" class="pill" data-price="11-99">🪙 11 - 99</button>
+          <button type="button" class="pill" data-price="100-999">🪙 100 - 999</button>
+          <button type="button" class="pill" data-price="1000+">🪙 1000+</button>
+        </div>
+        <button type="button" id="refreshGiftsBtn" class="btn btn-secondary btn-sm" title="Actualizar desde streamtoearn.io y TikTok Webcast">
+          🔄 Sincronizar Regalos
+        </button>
+      </div>
+      <div id="giftsCatalogGrid" class="entity-grid"></div>
+    </section>
+
+    <!-- TAB 4: SERVIDOR MINECRAFT (CONTROL, CONSOLA Y CONFIGURACIÓN) -->
+    <section id="tab-server" class="tab-panel">
+      <div class="section-header">
+        <div>
+          <h2>🏰 Panel de Control y Configuración del Servidor de Minecraft</h2>
+          <p>Inicia o detén tu servidor dedicado de Minecraft (Vanilla, Paper, Spigot, Purpur, Fabric o Forge), ejecuta comandos en vivo y edita <code>server.properties</code>.</p>
+        </div>
+        <div class="server-power-buttons">
+          <button type="button" id="startServerBtn" class="btn btn-primary">
+            ▶️ Iniciar Servidor Minecraft
+          </button>
+          <button type="button" id="stopServerBtn" class="btn btn-danger">
+            ⏹️ Detener Servidor
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra de Carpeta del Servidor y Activación 1-Clic de RCON + EULA -->
+      <div class="catalog-toolbar server-folder-bar">
+        <div class="server-folder-left">
+          <span class="step-badge">📂 Carpeta del Servidor Minecraft</span>
+          <div class="folder-input-group">
+            <input type="text" id="minecraftServerDirInput" placeholder="~/minecraft-server o C:\minecraft-server" />
+            <button type="button" id="browseServerDirBtn" class="btn btn-secondary btn-sm">
+              📂 Elegir Carpeta...
+            </button>
+            <button type="button" id="saveServerDirBtn" class="btn btn-secondary btn-sm">
+              Aplicar Ruta
+            </button>
+          </div>
+          <div id="serverFilesCheckRow" class="rule-gift-meta"></div>
+        </div>
+        <div class="server-folder-right">
+          <button type="button" id="installRconConfigBtn" class="btn btn-success btn-sm">
+            ⚡ Habilitar RCON Nativo + Aceptar EULA (1 Clic)
+          </button>
+        </div>
+      </div>
+
+      <div class="server-grid-layout">
+        <!-- COLUMNA IZQUIERDA: CONSOLA EN VIVO Y ACCIONES RÁPIDAS -->
+        <div class="server-panel-card">
+          <div class="panel-card-header">
+            <h3>📜 Consola del Servidor Minecraft en Vivo</h3>
+            <span id="serverProcessBadge" class="coin-tag">Estado: Verificando...</span>
+          </div>
+
+          <div class="quick-world-actions">
+            <button type="button" class="btn btn-secondary btn-sm" data-world-cmd="time set day">☀️ Día</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-world-cmd="time set noon">🕛 Mediodía</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-world-cmd="time set night">🌙 Noche</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-world-cmd="weather clear">🌤️ Clima Despejado</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-world-cmd="gamerule keepInventory true">🎒 KeepInventory ON</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="opCurrentPlayerBtn">👑 Dar OP a mi Jugador</button>
+          </div>
+
+          <pre id="minecraftConsoleBox" class="console-log-box">Cargando registros del servidor...</pre>
+
+          <form id="consoleCommandForm" class="console-input-row">
+            <input type="text" id="consoleCommandInput" placeholder="Escribe un comando de servidor Minecraft (ej. op TuNombreEnMinecraft, say Hola, list, difficulty hard)..." />
+            <button type="submit" class="btn btn-primary btn-sm">Enviar Comando</button>
+          </form>
+        </div>
+
+        <!-- COLUMNA DERECHA: CONFIGURACIÓN DEL SERVIDOR Y DEL MUNDO (server.properties) -->
+        <div class="server-panel-card">
+          <div class="panel-card-header">
+            <h3>⚙️ Ajustes del Servidor y Mundo (<code>server.properties</code>)</h3>
+            <button type="button" id="saveMinecraftConfigBtn" class="btn btn-primary btn-sm">
+              💾 Guardar Configuración
+            </button>
+          </div>
+
+          <div class="server-settings-form">
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="srvName">🏷️ Nombre del Servidor (<code>server-name</code>)</label>
+                <input type="text" id="srvName" placeholder="Minecraft Server" />
+              </div>
+              <div class="form-group">
+                <label for="srvPort">🔌 Puerto del Servidor (<code>server-port</code>)</label>
+                <input type="number" id="srvPort" min="1024" max="65535" value="25565" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="srvMotd">📣 Mensaje del Día / Descripción (<code>motd</code>)</label>
+              <input type="text" id="srvMotd" placeholder="¡Bienvenidos a mi servidor de Minecraft x TikTok Live!" />
+            </div>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label for="srvGameMode">🎮 Modo de Juego (<code>gamemode</code>)</label>
+                <select id="srvGameMode">
+                  <option value="survival">Survival (Supervivencia)</option>
+                  <option value="creative">Creative (Creativo)</option>
+                  <option value="adventure">Adventure (Aventura)</option>
+                  <option value="spectator">Spectator (Espectador)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="srvDifficulty">⚔️ Dificultad (<code>difficulty</code>)</label>
+                <select id="srvDifficulty">
+                  <option value="peaceful">Peaceful (Pacífico)</option>
+                  <option value="easy">Easy (Fácil)</option>
+                  <option value="normal">Normal</option>
+                  <option value="hard">Hard (Difícil)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="srvMaxPlayers">👥 Jugadores Máximos</label>
+                <input type="number" id="srvMaxPlayers" min="1" max="1000" value="20" />
+              </div>
+            </div>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label for="srvViewRadius">🔭 Distancia de Visión (Chunks)</label>
+                <input type="number" id="srvViewRadius" min="3" max="32" value="10" />
+              </div>
+              <div class="form-group">
+                <label for="srvMinRam">🧠 Memoria RAM Mínima Java (GB)</label>
+                <input type="number" id="srvMinRam" min="1" max="32" value="2" />
+              </div>
+              <div class="form-group">
+                <label for="srvMaxRam">🚀 Memoria RAM Máxima Java (GB)</label>
+                <input type="number" id="srvMaxRam" min="2" max="64" value="4" />
+              </div>
+            </div>
+
+            <div class="world-toggles-box">
+              <div class="step-badge">🌍 Reglas del Servidor (<code>server.properties</code>)</div>
+              <div class="toggles-grid">
+                <label class="checkbox-row">
+                  <input type="checkbox" id="wldPvp" checked />
+                  <span>⚔️ Activar PvP entre jugadores (<code>pvp=true</code>)</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="wldOnlineMode" checked />
+                  <span>🔐 Modo Online / Solo cuentas Premium (<code>online-mode</code>)</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="wldSpawnMonsters" checked />
+                  <span>🧟 Generación de Monstruos Hostiles (<code>spawn-monsters</code>)</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="wldSpawnAnimals" checked />
+                  <span>🐄 Generación de Animales Pasivos (<code>spawn-animals</code>)</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="wldAllowFlight" checked />
+                  <span>🪽 Permitir Vuelo en el Servidor (<code>allow-flight</code>)</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="wldCommandBlock" checked />
+                  <span>🟧 Habilitar Bloques de Comandos (<code>enable-command-block</code>)</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="srvWhiteList" />
+                  <span>🛡️ Activar Whitelist / Lista Blanca (<code>white-list</code>)</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="wldHardcore" />
+                  <span>💀 Modo Extremo / Hardcore (<code>hardcore</code>)</span>
+                </label>
+              </div>
+            </div>
+            <small class="hint">💡 Nota: Los cambios en <code>server.properties</code> se guardan al instante; si el servidor ya está encendido, algunos ajustes aplican al reiniciarlo.</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: DOCUMENTACIÓN, GUÍA DE USO Y SECCIÓN DE AYUDA -->
+    <section id="tab-help" class="tab-panel">
+      <div class="section-header">
+        <div>
+          <h2>📖 Documentación Oficial y Centro de Ayuda</h2>
+          <p>Aprende cómo conectar tu directo de TikTok Live con tu servidor de Minecraft: Java Edition paso a paso, usar comandos y resolver cualquier duda.</p>
+        </div>
+      </div>
+
+      <!-- PASO A PASO RÁPIDO (4 PASOS) -->
+      <div class="docs-section-block">
+        <div class="step-badge">🚀 Inicio Rápido en 4 Pasos</div>
+        <div class="docs-steps-grid">
+          <div class="docs-step-card">
+            <div class="docs-step-num">1</div>
+            <h3>Configura tu Carpeta del Servidor</h3>
+            <p>
+              Ve a la pestaña <strong>🏰 Servidor Minecraft</strong>, selecciona la carpeta donde está tu archivo <code>server.jar</code> (o Paper/Spigot/Fabric/Forge) y haz clic en <strong>⚡ Habilitar RCON Nativo + Aceptar EULA (1 Clic)</strong>.
+            </p>
+          </div>
+
+          <div class="docs-step-card">
+            <div class="docs-step-num">2</div>
+            <h3>Define tu Jugador y Usuario TikTok</h3>
+            <p>
+              En la barra superior escribe tu nombre de usuario dentro del juego en <strong>👤 Jugador Minecraft</strong> y tu cuenta en <strong>🎥 Usuario TikTok</strong>. Luego presiona <strong>💾 Guardar Ajustes</strong>.
+            </p>
+          </div>
+
+          <div class="docs-step-card">
+            <div class="docs-step-num">3</div>
+            <h3>Inicia el Servidor y Entra al Mundo</h3>
+            <p>
+              Haz clic en <strong>▶️ Iniciar Servidor Minecraft</strong>. Abre tu cliente de Minecraft: Java Edition, entra en <strong>Multijugador → Conexión Directa</strong> a <code>127.0.0.1:25565</code> y presiona <strong>👑 Dar OP a mi Jugador</strong>.
+            </p>
+          </div>
+
+          <div class="docs-step-card">
+            <div class="docs-step-num">4</div>
+            <h3>Crea tus Reglas y ¡Prueba en Vivo!</h3>
+            <p>
+              Asigna qué <strong>Mobs</strong> spawnean o qué <strong>Ítems</strong> se entregan con cada regalo de TikTok. Usa el botón <strong>⚡ Probar en Minecraft</strong> en cualquier momento para verificarlo dentro del juego.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCUMENTACIÓN DE CADA SECCIÓN DE LA APLICACIÓN + REFERENCIA DE COMANDOS -->
+      <div class="docs-two-col">
+        <!-- Columna Izquierda: Guía de Pestañas -->
+        <div class="server-panel-card">
+          <div class="panel-card-header">
+            <h3>🧭 Guía de Secciones de la Aplicación</h3>
+          </div>
+
+          <div class="docs-list">
+            <div class="docs-item">
+              <h4>🎛️ 1. Mis Reglas Configuradas</h4>
+              <p>
+                Es tu panel principal de eventos activos. Aquí ves todos los regalos de TikTok que ya tienen asignado un <strong>Mob</strong> o un <strong>Ítem</strong>, además de los 3 eventos especiales del directo:
+              </p>
+              <ul>
+                <li><strong>➕ Nuevo Seguidor (Follow):</strong> Se ejecuta cuando alguien sigue tu cuenta en vivo.</li>
+                <li><strong>❤️ Meta de Likes:</strong> Se activa automáticamente cada cierta cantidad de Likes acumulados (ej. cada 100 Likes).</li>
+                <li><strong>🎲 Regalo por Defecto:</strong> Acción comodín cuando te envían un regalo que no tiene su propia regla.</li>
+              </ul>
+            </div>
+
+            <div class="docs-item">
+              <h4>👾 2. Catálogo de Mobs Minecraft (1.21+)</h4>
+              <p>
+                Explora todas las criaturas invocables de Minecraft: Java Edition (Hostiles, Jefes, Pasivos, Acuáticos, Golems y Explosivos) con su render oficial y su ID <code>minecraft:&lt;mob&gt;</code>.
+              </p>
+              <ul>
+                <li><strong>⚡ Spawnear:</strong> Invoca inmediatamente ese Mob en las coordenadas exactas de tu jugador dentro del mundo (<code>execute at {player} run summon ...</code>).</li>
+                <li><strong>🎯 Asignar:</strong> Abre el editor de reglas con ese Mob preseleccionado para vincularlo a un regalo de TikTok.</li>
+              </ul>
+            </div>
+
+            <div class="docs-item">
+              <h4>🗡️ 3. Catálogo de Ítems Minecraft (1,384+ Objetos)</h4>
+              <p>
+                Incluye todas las armas, armaduras, herramientas, manzanas doradas, tótems, pociones, minerales y bloques de Minecraft 1.21+ con su icono oficial y su ID de comando real.
+              </p>
+              <ul>
+                <li><strong>⚡ Dar Ítem:</strong> Entrega el objeto al instante en el inventario de tu jugador (<code>give {player} minecraft:&lt;item&gt; 1</code>).</li>
+                <li><strong>🎯 Asignar:</strong> Permite que tus espectadores te regalen espadas de diamante/netherita, comida o tótems cuando envían regalos o likes.</li>
+              </ul>
+            </div>
+
+            <div class="docs-item">
+              <h4>🎁 4. Catálogo de Regalos TikTok (1,690+ Regalos)</h4>
+              <p>
+                Filtra regalos por su precio en monedas (<code>1 moneda</code>, <code>2-10</code>, <code>11-99</code>, <code>100-999</code>, <code>1000+</code>) y haz clic en <strong>➕ Asignar Mob / Ítem</strong> para elegir qué ocurre cuando lo envían.
+              </p>
+            </div>
+
+            <div class="docs-item">
+              <h4>🏰 5. Servidor Minecraft (Control, Consola y Ajustes)</h4>
+              <p>
+                Inicia o detén tu servidor dedicado sin usar la terminal, activa RCON y EULA con 1 clic, monitorea la consola en vivo, cambia la hora/clima y edita visualmente <code>server.properties</code> (modo de juego, dificultad, PvP, modo online/no-premium y memoria RAM Java).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Comandos RCON y Variables Dinámicas -->
+        <div class="server-panel-card">
+          <div class="panel-card-header">
+            <h3>⌨️ Referencia de Comandos y Variables</h3>
+          </div>
+
+          <div class="docs-list">
+            <div class="docs-item">
+              <h4>🔄 Variables Dinámicas Disponibles</h4>
+              <p>Puedes usar estas variables en los mensajes del chat y comandos personalizados; se reemplazan automáticamente en cada evento:</p>
+              <div class="docs-code-table">
+                <div><code>{player}</code> <span>Nombre de tu jugador en Minecraft (o <code>@p</code> si está vacío)</span></div>
+                <div><code>{user}</code> <span>Nombre del espectador en TikTok que envió el regalo/follow</span></div>
+                <div><code>{giftName}</code> <span>Nombre del regalo enviado en TikTok (ej. <em>Rose</em>, <em>Corgi</em>)</span></div>
+                <div><code>{repeatCount}</code> <span>Cantidad de regalos enviados en racha/combo (ej. <em>5</em>)</span></div>
+              </div>
+            </div>
+
+            <div class="docs-item">
+              <h4>⛏️ Comandos Principales en Minecraft: Java Edition (RCON)</h4>
+              <div class="docs-code-table">
+                <div>
+                  <code>execute at {player} run summon minecraft:&lt;mob&gt; ~ ~ ~</code>
+                  <span>Spawnea un Mob exactamente en la posición donde está tu jugador (ej. <code>execute at {player} run summon minecraft:creeper ~ ~ ~</code>).</span>
+                </div>
+                <div>
+                  <code>give {player} minecraft:&lt;item&gt; &lt;cantidad&gt;</code>
+                  <span>Entrega una o varias unidades de un ítem al inventario del jugador (ej. <code>give {player} minecraft:diamond_sword 1</code> o <code>give {player} minecraft:golden_apple 5</code>).</span>
+                </div>
+                <div>
+                  <code>say &lt;Mensaje&gt;</code>
+                  <span>Anuncia un mensaje global en el chat del servidor de Minecraft.</span>
+                </div>
+                <div>
+                  <code>op &lt;Jugador&gt;</code>
+                  <span>Otorga permisos de Operador (Administrador) a tu jugador.</span>
+                </div>
+                <div>
+                  <code>time set day | noon | night</code>
+                  <span>Cambia la hora del mundo instantáneamente.</span>
+                </div>
+                <div>
+                  <code>weather clear</code>
+                  <span>Despeja la lluvia o tormenta en el mundo actual.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="docs-item">
+              <h4>🔥 ¿Cómo funciona "Escalar con Combo"?</h4>
+              <p>
+                Cuando un regalo tiene activada la casilla <strong>🔥 Escalar con Combo</strong>, si un espectador envía un combo de <code>10x Rose</code>, la aplicación espera a que termine la racha para no duplicar eventos, anuncia el mensaje en el chat una sola vez y ejecuta la acción <strong>10 veces</strong> (límite de seguridad de 20x por combo para evitar crasheos).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN DE AYUDA Y SOLUCIÓN DE PROBLEMAS FRECUENTES (FAQ) -->
+      <div class="docs-section-block mt-lg">
+        <div class="step-badge">🛠️ Centro de Ayuda y Solución de Problemas Frecuentes (FAQ)</div>
+        <div class="faq-grid">
+          <div class="faq-card">
+            <h4>❓ Hago clic en "⚡ Probar en Minecraft" pero no aparece nada en el juego</h4>
+            <p>Verifica estos 3 puntos rápidos:</p>
+            <ol>
+              <li>Que el servidor de Minecraft esté encendido (el indicador izquierdo debe decir <strong>🟢 Servidor de Minecraft y RCON Activos</strong>).</li>
+              <li>Que el botón de la esquina superior derecha diga <strong>🟢 RCON REAL ACTIVO</strong> (si dice <em>🧪 SIMULADOR</em>, hazle clic para cambiarlo a modo Real).</li>
+              <li>Que <strong>ya hayas entrado dentro del mundo</strong> con tu personaje en <code>127.0.0.1:25565</code> y que el campo <strong>👤 Jugador Minecraft</strong> coincida con tu nombre de usuario (o esté vacío para usar <code>@p</code>).</li>
+            </ol>
+          </div>
+
+          <div class="faq-card">
+            <h4>❓ ¿Necesito instalar algún Mod o Plugin especial en mi servidor de Minecraft?</h4>
+            <p>
+              <strong>¡No!</strong> A diferencia de otros juegos, <strong>Minecraft: Java Edition ya incluye soporte RCON nativo de fábrica</strong> en cualquier servidor oficial (Vanilla, Paper, Spigot, Purpur, Fabric o Forge). Solo haz clic en el botón <strong>⚡ Habilitar RCON Nativo + Aceptar EULA (1 Clic)</strong> en la pestaña <strong>🏰 Servidor Minecraft</strong> y la aplicación configurará <code>server.properties</code> y <code>eula.txt</code> por ti.
+            </p>
+          </div>
+
+          <div class="faq-card">
+            <h4>❓ El estado de TikTok Live dice "Usuario fuera de línea (No está en LIVE)"</h4>
+            <p>
+              ¡Es completamente normal si aún no has iniciado transmisión en TikTok! TikTok solo activa la sala de eventos Webcast cuando estás en vivo. Mientras tanto, puedes configurar todas tus reglas y probarlas en tu partida usando los botones <strong>⚡ Probar en Minecraft</strong>, <strong>⚡ Spawnear</strong> y <strong>⚡ Dar Ítem</strong>.
+            </p>
+          </div>
+
+          <div class="faq-card">
+            <h4>❓ ¿Necesito pagar alguna suscripción, API Key o cuenta Pro?</h4>
+            <p>
+              <strong>No.</strong> Esta herramienta es <strong>100% gratuita y de código abierto</strong>. Se conecta directamente al Webcast público de TikTok sin pasar por servicios de pago de terceros (como TikFinity Pro o planes Business de EulerStream), y se comunica localmente con el RCON nativo de tu servidor de Minecraft.
+            </p>
+          </div>
+
+          <div class="faq-card">
+            <h4>❓ ¿De dónde descargo el archivo <code>server.jar</code> de Minecraft?</h4>
+            <p>
+              Puedes descargar gratis el <code>server.jar</code> oficial de <a href="https://www.minecraft.net/es-es/download/server" target="_blank" rel="noopener noreferrer">Minecraft.net</a> o usar un servidor optimizado como <a href="https://papermc.io/downloads/paper" target="_blank" rel="noopener noreferrer">PaperMC</a>. Coloca el archivo <code>.jar</code> en una carpeta (por ejemplo <code>~/minecraft-server</code> o <code>C:\minecraft-server</code>) y selecciónala en la pestaña <strong>🏰 Servidor Minecraft</strong>.
+            </p>
+          </div>
+
+          <div class="faq-card">
+            <h4>❓ ¿Dónde se guardan mis reglas personalizadas?</h4>
+            <p>
+              Todas tus reglas de regalos, mobs e ítems se guardan automáticamente en el archivo <code>config/gifts.json</code> (o en <code>~/.config/minecraft-tiktok-rcon/gifts.json</code> si usas el instalador empaquetado) y se recargan en caliente sin necesidad de reiniciar el servidor de Minecraft.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CRÉDITOS, FUENTES DE DATOS Y MATERIAL DE TERCEROS -->
+      <div class="docs-section-block mt-lg">
+        <div class="step-badge">📜 Créditos, Fuentes de Datos y Material de Terceros</div>
+        <div class="faq-grid">
+          <div class="faq-card">
+            <h4>⛏️ Datos e Ilustraciones de Mobs e Ítems de Minecraft</h4>
+            <p>
+              Los identificadores técnicos de entidades e ítems de Minecraft 1.21+ provienen del repositorio abierto <strong><a href="https://github.com/PrismarineJS/minecraft-data" target="_blank" rel="noopener noreferrer">PrismarineJS / minecraft-data</a></strong>, y las ilustraciones/iconos provienen de <strong><a href="https://minecraft.wiki/" target="_blank" rel="noopener noreferrer">Minecraft Wiki (minecraft.wiki)</a></strong> e <strong><a href="https://github.com/InventivetalentDev/minecraft-assets" target="_blank" rel="noopener noreferrer">InventivetalentDev / minecraft-assets</a></strong>. <strong>Minecraft</strong>, sus nombres, marcas e ilustraciones son propiedad intelectual de <strong>Mojang Synergies AB / Microsoft Corporation</strong>.
+            </p>
+          </div>
+
+          <div class="faq-card">
+            <h4>🎁 Catálogo e Iconos de Regalos de TikTok Live</h4>
+            <p>
+              El listado extendido de regalos, nombres, costos en monedas e iconos se obtiene combinando la guía pública de <strong><a href="https://streamtoearn.io/gifts" target="_blank" rel="noopener noreferrer">StreamToEarn.io (/gifts)</a></strong> y la API pública de <strong>TikTok Webcast</strong>. <strong>TikTok</strong> y las ilustraciones de sus regalos virtuales son marcas registradas y propiedad de <strong>ByteDance Ltd.</strong>
+            </p>
+          </div>
+
+          <div class="faq-card">
+            <h4>📦 Librerías Open Source y Tipografías</h4>
+            <p>
+              Construido sobre <strong>Node.js</strong> y <strong>Electron</strong> utilizando los paquetes de código abierto <code>tiktok-live-connector</code> (Zerody), <code>rcon-client</code> y <code>dotenv</code>. Las fuentes tipográficas <em>Cinzel</em> e <em>Inter</em> son provistas por <strong>Google Fonts</strong> bajo licencia abierta (OFL).
+            </p>
+          </div>
+
+          <div class="faq-card">
+            <h4>⚖️ Aviso Legal de No Afiliación</h4>
+            <p>
+              Este proyecto es una herramienta comunitaria independiente, gratuita y de código abierto. <strong>No está afiliada, patrocinada ni respaldada oficialmente por Mojang Studios, Microsoft Corporation, TikTok, ByteDance Ltd., Minecraft Wiki ni StreamToEarn.io.</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PIE DE PÁGINA GLOBAL CON ATRIBUCIONES Y CRÉDITOS DE MATERIAL DE TERCEROS -->
+    <footer class="app-footer">
+      <div class="app-footer-inner">
+        <p>
+          <strong>📜 Créditos y Material de Terceros:</strong>
+          Catálogo de Mobs e Ítems obtenido de
+          <a href="https://github.com/PrismarineJS/minecraft-data" target="_blank" rel="noopener noreferrer">PrismarineJS (minecraft-data)</a> e ilustraciones de
+          <a href="https://minecraft.wiki/" target="_blank" rel="noopener noreferrer">Minecraft Wiki</a> y
+          <a href="https://github.com/InventivetalentDev/minecraft-assets" target="_blank" rel="noopener noreferrer">minecraft-assets</a> ·
+          Catálogo de regalos e iconos obtenido de
+          <a href="https://streamtoearn.io/gifts" target="_blank" rel="noopener noreferrer">StreamToEarn.io (/gifts)</a> y TikTok Webcast API ·
+          Librerías Open Source: <code>tiktok-live-connector</code>, <code>rcon-client</code>, <code>dotenv</code> y <code>Electron</code>.
+        </p>
+        <p class="app-footer-disclaimer">
+          Proyecto comunitario 100% gratuito y sin fines de lucro. <em>Minecraft</em> y sus recursos visuales pertenecen a <strong>Mojang Synergies AB / Microsoft Corporation</strong> · <em>TikTok</em> y los iconos de regalos pertenecen a <strong>ByteDance Ltd.</strong> No es un producto oficial de Minecraft ni está aprobado o asociado con Mojang o Microsoft.
+        </p>
+      </div>
+    </footer>
+  </main>
+
+  <!-- MODAL / EDITOR VISUAL DE REGLA (SELECCIONAR REGALO/EVENTO + SELECCIONAR MOBS O ÍTEMS) -->
+  <div id="ruleModalBackdrop" class="modal-backdrop hidden">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 id="modalTitle">✨ Configurar Regalo / Evento y Mobs o Ítems</h2>
+        <button type="button" id="closeModalBtn" class="modal-close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- COLUMNA IZQUIERDA: 1. ELEGIR DISPARADOR (REGALO O EVENTO) -->
+        <div class="builder-column">
+          <div class="step-badge">Paso 1 · ¿Cuándo va a ocurrir?</div>
+
+          <div class="trigger-type-selector">
+            <button type="button" class="trigger-type-btn active" data-trigger="gift">🎁 Regalo de TikTok</button>
+            <button type="button" class="trigger-type-btn" data-trigger="follow">➕ Nuevo Seguidor</button>
+            <button type="button" class="trigger-type-btn" data-trigger="likeMilestone">❤️ Meta de Likes</button>
+            <button type="button" class="trigger-type-btn" data-trigger="defaultGift">🎲 Regalo por Defecto</button>
+          </div>
+
+          <!-- Selector de Regalo de TikTok -->
+          <div id="triggerGiftSection" class="trigger-section">
+            <div class="selected-banner" id="selectedGiftBanner">
+              <div class="selected-banner-empty">Selecciona un regalo de TikTok abajo 👇</div>
+            </div>
+
+            <div class="mini-toolbar">
+              <input type="text" id="modalGiftSearch" placeholder="🔍 Buscar regalo (Rose, GG, Corgi, Heart...)" />
+              <select id="modalGiftPriceFilter">
+                <option value="all">Todas las monedas</option>
+                <option value="1">1 moneda</option>
+                <option value="2-10">2 - 10 monedas</option>
+                <option value="11-99">11 - 99 monedas</option>
+                <option value="100-999">100 - 999 monedas</option>
+                <option value="1000+">1000+ monedas</option>
+              </select>
+            </div>
+
+            <div id="modalGiftsPickerGrid" class="picker-grid"></div>
+          </div>
+
+          <!-- Opciones para Eventos Especiales -->
+          <div id="triggerSpecialSection" class="trigger-section hidden">
+            <div class="special-event-box">
+              <label class="checkbox-row">
+                <input type="checkbox" id="modalSpecialEnabled" checked />
+                <span>Activar este evento especial en el directo</span>
+              </label>
+              <div id="modalLikesEveryGroup" class="form-group mt-sm hidden">
+                <label for="modalEveryLikes">Ejecutar cada cuántos Likes acumulados:</label>
+                <input type="number" id="modalEveryLikes" min="10" step="10" value="100" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Ajustes de la Regla -->
+          <div class="rule-options-box">
+            <div class="form-group">
+              <label for="modalDescription">Descripción de la regla:</label>
+              <input type="text" id="modalDescription" placeholder="Ej. Spawnea un Creeper cerca del jugador" />
+            </div>
+
+            <div id="modalComboGroup" class="form-group">
+              <label class="checkbox-row">
+                <input type="checkbox" id="modalScaleCombo" checked />
+                <span>🔥 <strong>Escalar con Combo:</strong> Si envían 5x regalos en combo, ejecutar 5 veces</span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label for="modalSayMessage">💬 Mensaje en el chat del servidor Minecraft (opcional):</label>
+              <input type="text" id="modalSayMessage" placeholder="¡{user} envió {repeatCount}x {giftName}!" />
+              <small class="hint">Variables: <code>{user}</code>, <code>{player}</code>, <code>{giftName}</code>, <code>{repeatCount}</code></small>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: 2. ELEGIR MOBS O ÍTEMS DE MINECRAFT (Y COMANDOS EXTRA) -->
+        <div class="builder-column">
+          <div class="step-badge">Paso 2 · ¿Qué pasa en Minecraft? (Spawnear Mob o Dar Ítem)</div>
+
+          <!-- Lista de Mobs e Ítems ya asignados a esta regla -->
+          <div class="selected-mobs-panel">
+            <div class="panel-Label-row">
+              <span>⚡ Acciones asignadas a este evento (Mobs e Ítems):</span>
+              <button type="button" id="clearSelectedMobsBtn" class="btn-link">Limpiar selección</button>
+            </div>
+            <div id="selectedMobsList" class="selected-mobs-list"></div>
+          </div>
+
+          <!-- Selector de modo en Paso 2: Spawnear Mobs vs Dar Ítems al Jugador -->
+          <div class="reward-type-selector">
+            <button type="button" class="reward-type-btn active" data-reward-tab="mobs">
+              👾 Spawnear Mobs (<code>summon</code>)
+            </button>
+            <button type="button" class="reward-type-btn" data-reward-tab="items">
+              🗡️ Dar Ítem al Jugador (<code>give {player}</code>)
+            </button>
+          </div>
+
+          <!-- Sub-panel A: Buscador visual de Mobs de Minecraft -->
+          <div id="modalMobsSection">
+            <div class="mini-toolbar">
+              <input type="text" id="modalMobSearch" placeholder="🔍 Buscar Mob de Minecraft (ej. Creeper, Zombie, Warden, Breeze, Skeleton)..." />
+              <select id="modalMobCategoryFilter">
+                <option value="all">Todas las categorías</option>
+              </select>
+            </div>
+            <div id="modalMobsPickerGrid" class="picker-grid mobs-picker"></div>
+          </div>
+
+          <!-- Sub-panel B: Buscador visual de Ítems de Minecraft -->
+          <div id="modalItemsSection" class="hidden">
+            <div class="mini-toolbar">
+              <input type="text" id="modalItemSearch" placeholder="🔍 Buscar Ítem de Minecraft (ej. diamond_sword, golden_apple, totem, mace)..." />
+              <select id="modalItemCategoryFilter">
+                <option value="all">Todas las categorías</option>
+              </select>
+            </div>
+            <div id="modalItemsPickerGrid" class="picker-grid mobs-picker"></div>
+          </div>
+
+          <!-- Comandos adicionales -->
+          <div class="extra-commands-box">
+            <label for="modalExtraCommands">🛠️ Comandos extra personalizados (1 por línea, opcional):</label>
+            <textarea id="modalExtraCommands" rows="2" placeholder="time set night"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="cancelModalBtn" class="btn btn-secondary">Cancelar</button>
+        <button type="button" id="saveRuleBtn" class="btn btn-primary btn-lg">💾 Guardar Regla en Minecraft</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificación Toast -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
+
