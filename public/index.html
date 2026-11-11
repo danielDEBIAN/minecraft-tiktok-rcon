@@ -504,8 +504,8 @@
                   <span>Entrega una o varias unidades de un ítem al inventario del jugador (ej. <code>give {player} minecraft:diamond_sword 1</code> o <code>give {player} minecraft:golden_apple 5</code>).</span>
                 </div>
                 <div>
-                  <code>say &lt;Mensaje&gt;</code>
-                  <span>Anuncia un mensaje global en el chat del servidor de Minecraft.</span>
+                  <code>title @a title {"text":"&lt;Título&gt; | &lt;Subtítulo&gt;","color":"gold","bold":true}</code>
+                  <span>Muestra un Título grande y centrado en la pantalla de Minecraft para que se vea claramente en el stream.</span>
                 </div>
                 <div>
                   <code>op &lt;Jugador&gt;</code>
@@ -708,9 +708,9 @@
             </div>
 
             <div class="form-group">
-              <label for="modalSayMessage">💬 Mensaje en el chat del servidor Minecraft (opcional):</label>
-              <input type="text" id="modalSayMessage" placeholder="¡{user} envió {repeatCount}x {giftName}!" />
-              <small class="hint">Variables: <code>{user}</code>, <code>{player}</code>, <code>{giftName}</code>, <code>{repeatCount}</code></small>
+              <label for="modalSayMessage">📺 Título en pantalla de Minecraft para el Stream (opcional):</label>
+              <input type="text" id="modalSayMessage" placeholder="¡{user} envió {repeatCount}x {giftName}! | ¡Aparece en el mundo!" />
+              <small class="hint">Variables: <code>{user}</code>, <code>{player}</code>, <code>{giftName}</code>, <code>{repeatCount}</code> (usa <code>|</code> para separar Título y Subtítulo)</small>
             </div>
           </div>
         </div>

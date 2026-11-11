@@ -88,8 +88,27 @@ function parseRuleCommands(commands = []) {
 
     if (cmd.toLowerCase().startsWith('say ')) {
       if (!sayMessage) {
-        sayMessage = cmd.slice(4).trim();
+        sayMessage = cmd.slice(4).trim().replace(/^\[tiktok\]\s*/i, '');
       }
+      continue;
+    }
+
+    const titleMatch = cmd.match(/^title\s+\S+\s+title\s+(.+)$/i);
+    if (titleMatch) {
+      if (!sayMessage) {
+        const payload = titleMatch[1].trim();
+        try {
+          const parsed = JSON.parse(payload);
+          sayMessage = typeof parsed === 'string' ? parsed : parsed?.text || payload;
+        } catch {
+          const textField = payload.match(/"text"\s*:\s*"([^"]*)"/);
+          sayMessage = textField ? textField[1] : payload.replace(/^["']|["']$/g, '');
+        }
+      }
+      continue;
+    }
+
+    if (/^title\s+\S+\s+(?:subtitle|times)\s+/i.test(cmd)) {
       continue;
     }
 
@@ -128,8 +147,16 @@ function parseRuleCommands(commands = []) {
 function buildRuleCommands({ sayMessage, mobs = [], items = [], extraCommands = [] }) {
   const commands = [];
   if (sayMessage && sayMessage.trim()) {
-    const cleanSay = sayMessage.trim().replace(/^say\s+/i, '');
-    commands.push(`say ${cleanSay}`);
+    const cleanTitle = sayMessage
+      .trim()
+      .replace(/^say\s+/i, '')
+      .replace(/^\[tiktok\]\s*/i, '');
+    const titlePayload = JSON.stringify({
+      text: cleanTitle,
+      color: 'gold',
+      bold: true,
+    });
+    commands.push(`title @a title ${titlePayload}`);
   }
   for (const mob of mobs) {
     const roleId = normalizeMcId(mob.roleId);
@@ -959,8 +986,8 @@ function openRuleModal(options = {}) {
     document.getElementById('modalDescription').value = '';
     document.getElementById('modalScaleCombo').checked = true;
     document.getElementById('modalSayMessage').value = options.preselectedItemId
-      ? '[TikTok] ¡{user} envió {repeatCount}x {giftName}! Entregando ítem a {player}.'
-      : '[TikTok] ¡{user} envió {repeatCount}x {giftName}! ¡Aparece un enemigo para {player}!';
+      ? '¡{user} envió {repeatCount}x {giftName}! | Entregando ítem a {player}.'
+      : '¡{user} envió {repeatCount}x {giftName}! | ¡Aparece un enemigo para {player}!';
     document.getElementById('modalExtraCommands').value = '';
     document.getElementById('modalSpecialEnabled').checked = true;
     document.getElementById('modalEveryLikes').value = 100;

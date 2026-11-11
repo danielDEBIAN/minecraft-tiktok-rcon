@@ -67,6 +67,123 @@ export class GiftHandler {
   }
 
   /**
+   * Extrae el texto de un comando de anuncio ('title ...' o 'say ...')
+   * @param {string} cmdTemplate
+   * @returns {string|null}
+   */
+  extractAnnouncementTemplate(cmdTemplate) {
+    const trimmed = String(cmdTemplate || '').trim();
+    if (!trimmed) return null;
+
+    if (trimmed.toLowerCase().startsWith('say ')) {
+      return trimmed.slice(4).trim();
+    }
+
+    const titleMatch = trimmed.match(/^title\s+\S+\s+title\s+(.+)$/i);
+    if (titleMatch) {
+      const payload = titleMatch[1].trim();
+      if (payload.startsWith('{') || payload.startsWith('"')) {
+        try {
+          const parsed = JSON.parse(payload);
+          if (typeof parsed === 'string') return parsed;
+          if (parsed && typeof parsed.text === 'string') return parsed.text;
+        } catch {
+          // Si contiene llaves de plantilla o formato manual, extraer el campo text con regex
+          const textField = payload.match(/"text"\s*:\s*"([^"]*)"/);
+          if (textField) return textField[1];
+        }
+      }
+      return payload.replace(/^["']|["']$/g, '');
+    }
+
+    return null;
+  }
+
+  /**
+   * Divide un mensaje en Título principal y Subtítulo para que luzca limpio y completo en el stream
+   * @param {string} rawMessage
+   * @returns {{ title: string, subtitle: string }}
+   */
+  splitTitleAndSubtitle(rawMessage) {
+    const clean = String(rawMessage || '')
+      .replace(/^\[tiktok\]\s*/i, '')
+      .trim();
+
+    if (!clean) {
+      return { title: '', subtitle: '' };
+    }
+
+    // Soportar separador explícito "Título | Subtítulo"
+    if (clean.includes('|')) {
+      const [first, ...rest] = clean.split('|');
+      return {
+        title: first.trim(),
+        subtitle: rest.join('|').trim(),
+      };
+    }
+
+    // Separar por oraciones (!, ., ?)
+    const sentences = clean
+      .split(/(?<=[!.?])\s+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    if (sentences.length >= 2) {
+      if (sentences.length >= 3 && (sentences[0] + ' ' + sentences[1]).length <= 34) {
+        return {
+          title: `${sentences[0]} ${sentences[1]}`,
+          subtitle: sentences.slice(2).join(' '),
+        };
+      }
+      return {
+        title: sentences[0],
+        subtitle: sentences.slice(1).join(' '),
+      };
+    }
+
+    // Si es una sola oración muy larga (> 38 caracteres), dividirla a la mitad para que quepa en pantalla
+    if (clean.length > 38) {
+      const mid = Math.floor(clean.length / 2);
+      const splitIdx = clean.lastIndexOf(' ', mid + 8);
+      if (splitIdx > 10) {
+        return {
+          title: clean.slice(0, splitIdx).trim(),
+          subtitle: clean.slice(splitIdx + 1).trim(),
+        };
+      }
+    }
+
+    return { title: clean, subtitle: '' };
+  }
+
+  /**
+   * Envía un Título y Subtítulo en grande al centro de la pantalla de Minecraft para que se vea en el stream
+   * @param {string} rawTemplate
+   * @param {Object} context
+   */
+  async sendTitleAnnouncement(rawTemplate, context) {
+    const formatted = this.formatCommand(rawTemplate, context);
+    const { title, subtitle } = this.splitTitleAndSubtitle(formatted);
+    if (!title) return [];
+
+    const timesCmd = 'title @a times 10 70 20';
+    const subtitleJson = JSON.stringify({
+      text: subtitle || '',
+      color: 'yellow',
+    });
+    const titleJson = JSON.stringify({
+      text: title,
+      color: 'gold',
+      bold: true,
+    });
+
+    const r1 = await this.rconClient.sendCommand(timesCmd);
+    const r2 = await this.rconClient.sendCommand(`title @a subtitle ${subtitleJson}`);
+    const r3 = await this.rconClient.sendCommand(`title @a title ${titleJson}`);
+    return [r1, r2, r3];
+  }
+
+  /**
    * Encuentra la configuración de un regalo (sin importar mayúsculas/minúsculas)
    */
   findGiftRule(giftName) {
@@ -126,11 +243,25 @@ export class GiftHandler {
 
     for (let i = 0; i < iterations; i++) {
       for (const cmdTemplate of rule.commands || []) {
-        // Evitar repetir el mensaje 'say' 10 veces en un combo; solo se anuncia en la primera iteración
-        if (i > 0 && cmdTemplate.trim().toLowerCase().startsWith('say ')) {
+        const trimmed = cmdTemplate.trim();
+        if (!trimmed) continue;
+
+        const announcementTemplate = this.extractAnnouncementTemplate(trimmed);
+        if (announcementTemplate !== null) {
+          // Evitar repetir el título 10 veces en un combo; solo se muestra en la primera iteración
+          if (i === 0) {
+            const titleResponses = await this.sendTitleAnnouncement(announcementTemplate, context);
+            responses.push(...titleResponses);
+          }
           continue;
         }
-        const finalCommand = this.formatCommand(cmdTemplate, context);
+
+        // Ignorar subcomandos 'title ... subtitle/times' sueltos en iteraciones > 0
+        if (i > 0 && /^title\s+/i.test(trimmed)) {
+          continue;
+        }
+
+        const finalCommand = this.formatCommand(trimmed, context);
         const res = await this.rconClient.sendCommand(finalCommand);
         responses.push(res);
       }
@@ -149,9 +280,20 @@ export class GiftHandler {
     const user = data.user?.nickname || data.user?.uniqueId || data.nickname || data.uniqueId || 'NuevoSeguidor';
     console.log(`\n➕ [NUEVO FOLLOW] ¡${user} comenzó a seguirte!`);
 
+    const context = { user, giftName: 'Follow', repeatCount: 1 };
     const responses = [];
     for (const cmdTemplate of followConfig.commands || []) {
-      const cmd = this.formatCommand(cmdTemplate, { user, giftName: 'Follow', repeatCount: 1 });
+      const trimmed = cmdTemplate.trim();
+      if (!trimmed) continue;
+
+      const announcementTemplate = this.extractAnnouncementTemplate(trimmed);
+      if (announcementTemplate !== null) {
+        const titleResponses = await this.sendTitleAnnouncement(announcementTemplate, context);
+        responses.push(...titleResponses);
+        continue;
+      }
+
+      const cmd = this.formatCommand(trimmed, context);
       const res = await this.rconClient.sendCommand(cmd);
       responses.push(res);
     }
@@ -177,9 +319,20 @@ export class GiftHandler {
       this.lastLikeMilestone = currentMilestone;
       console.log(`\n❤️ [META DE LIKES] ¡Se alcanzaron ${currentMilestone * step} likes acumulados! (Último: ${user})`);
 
+      const context = { user, giftName: 'Likes', repeatCount: step };
       const responses = [];
       for (const cmdTemplate of likeConfig.commands || []) {
-        const cmd = this.formatCommand(cmdTemplate, { user, giftName: 'Likes', repeatCount: step });
+        const trimmed = cmdTemplate.trim();
+        if (!trimmed) continue;
+
+        const announcementTemplate = this.extractAnnouncementTemplate(trimmed);
+        if (announcementTemplate !== null) {
+          const titleResponses = await this.sendTitleAnnouncement(announcementTemplate, context);
+          responses.push(...titleResponses);
+          continue;
+        }
+
+        const cmd = this.formatCommand(trimmed, context);
         const res = await this.rconClient.sendCommand(cmd);
         responses.push(res);
       }
