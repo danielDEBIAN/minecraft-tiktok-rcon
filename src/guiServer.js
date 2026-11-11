@@ -5,6 +5,7 @@ import net from 'node:net';
 import os from 'node:os';
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFile } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { TikTokLiveConnection } from 'tiktok-live-connector';
 import { MinecraftRconClient } from './rconClient.js';
@@ -482,6 +483,23 @@ export async function startGuiServer(options = {}) {
         fs.writeFileSync(CONFIG_PATH, JSON.stringify(body.config, null, 2) + '\n', 'utf-8');
         giftHandler.config = giftHandler.loadConfig();
         return sendJson(res, 200, { ok: true, config: giftHandler.config });
+      }
+
+      // 4.5 Generar y descargar el Layout Vertical 9:16 para OBS (1080x1920 PNG con recorte transparente)
+      if (req.method === 'GET' && url.pathname === '/api/obs-layout') {
+        const scriptPath = path.resolve(__dirname, './generateObsLayout.py');
+        const outPng = path.join(PUBLIC_DIR, 'obs-layout-vertical.png');
+        await new Promise((resolve) => {
+          execFile('python3', [scriptPath], { timeout: 20000 }, () => resolve());
+        });
+        if (fs.existsSync(outPng)) {
+          res.writeHead(200, {
+            'Content-Type': 'image/png',
+            'Content-Disposition': 'attachment; filename="obs-layout-vertical.png"',
+          });
+          return fs.createReadStream(outPng).pipe(res);
+        }
+        return sendJson(res, 500, { ok: false, error: 'No se pudo generar el layout OBS' });
       }
 
       // 5. Actualizar ajustes de jugador / TikTok / modo simulador (.env)

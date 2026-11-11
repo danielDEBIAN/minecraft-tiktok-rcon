@@ -986,8 +986,8 @@ function openRuleModal(options = {}) {
     document.getElementById('modalDescription').value = '';
     document.getElementById('modalScaleCombo').checked = true;
     document.getElementById('modalSayMessage').value = options.preselectedItemId
-      ? '¡{user} envió {repeatCount}x {giftName}! | Entregando ítem a {player}.'
-      : '¡{user} envió {repeatCount}x {giftName}! | ¡Aparece un enemigo para {player}!';
+      ? '{user} · {repeatCount}x {giftName} | Entregando ítem a {player}'
+      : '{user} · {repeatCount}x {giftName} | ¡Aparece junto a {player}!';
     document.getElementById('modalExtraCommands').value = '';
     document.getElementById('modalSpecialEnabled').checked = true;
     document.getElementById('modalEveryLikes').value = 100;

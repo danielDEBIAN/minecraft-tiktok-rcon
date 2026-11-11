@@ -79,21 +79,22 @@ export class GiftHandler {
       return trimmed.slice(4).trim();
     }
 
-    const titleMatch = trimmed.match(/^title\s+\S+\s+title\s+(.+)$/i);
+    const titleMatch = trimmed.match(/^title\s+\S+\s+(?:title|subtitle)\s+(.+)$/i);
     if (titleMatch) {
       const payload = titleMatch[1].trim();
       if (payload.startsWith('{') || payload.startsWith('"')) {
         try {
           const parsed = JSON.parse(payload);
-          if (typeof parsed === 'string') return parsed;
-          if (parsed && typeof parsed.text === 'string') return parsed.text;
+          if (typeof parsed === 'string') return parsed || null;
+          if (parsed && typeof parsed.text === 'string') return parsed.text || null;
         } catch {
           // Si contiene llaves de plantilla o formato manual, extraer el campo text con regex
           const textField = payload.match(/"text"\s*:\s*"([^"]*)"/);
-          if (textField) return textField[1];
+          if (textField) return textField[1] || null;
         }
       }
-      return payload.replace(/^["']|["']$/g, '');
+      const cleanPayload = payload.replace(/^["']|["']$/g, '');
+      return cleanPayload || null;
     }
 
     return null;
@@ -129,23 +130,17 @@ export class GiftHandler {
       .filter(Boolean);
 
     if (sentences.length >= 2) {
-      if (sentences.length >= 3 && (sentences[0] + ' ' + sentences[1]).length <= 34) {
-        return {
-          title: `${sentences[0]} ${sentences[1]}`,
-          subtitle: sentences.slice(2).join(' '),
-        };
-      }
       return {
         title: sentences[0],
         subtitle: sentences.slice(1).join(' '),
       };
     }
 
-    // Si es una sola oración muy larga (> 38 caracteres), dividirla a la mitad para que quepa en pantalla
-    if (clean.length > 38) {
+    // Si es una sola oración (> 24 caracteres), dividirla para que quepa en el recorte vertical 9:16
+    if (clean.length > 24) {
       const mid = Math.floor(clean.length / 2);
-      const splitIdx = clean.lastIndexOf(' ', mid + 8);
-      if (splitIdx > 10) {
+      const splitIdx = clean.lastIndexOf(' ', mid + 6);
+      if (splitIdx > 6) {
         return {
           title: clean.slice(0, splitIdx).trim(),
           subtitle: clean.slice(splitIdx + 1).trim(),
@@ -157,7 +152,8 @@ export class GiftHandler {
   }
 
   /**
-   * Envía un Título y Subtítulo en grande al centro de la pantalla de Minecraft para que se vea en el stream
+   * Envía un Título compacto (usando subtitle a escala 2x + actionbar a escala 1x)
+   * para que quepa perfectamente dentro del recorte vertical 9:16 de TikTok en OBS
    * @param {string} rawTemplate
    * @param {Object} context
    */
@@ -167,20 +163,28 @@ export class GiftHandler {
     if (!title) return [];
 
     const timesCmd = 'title @a times 10 70 20';
-    const subtitleJson = JSON.stringify({
-      text: subtitle || '',
-      color: 'yellow',
-    });
-    const titleJson = JSON.stringify({
+    const compactTitleJson = JSON.stringify({
       text: title,
       color: 'gold',
       bold: true,
     });
 
     const r1 = await this.rconClient.sendCommand(timesCmd);
-    const r2 = await this.rconClient.sendCommand(`title @a subtitle ${subtitleJson}`);
-    const r3 = await this.rconClient.sendCommand(`title @a title ${titleJson}`);
-    return [r1, r2, r3];
+    const r2 = await this.rconClient.sendCommand(`title @a subtitle ${compactTitleJson}`);
+    const r3 = await this.rconClient.sendCommand('title @a title {"text":""}');
+    const responses = [r1, r2, r3];
+
+    if (subtitle) {
+      const actionbarJson = JSON.stringify({
+        text: subtitle,
+        color: 'yellow',
+        bold: true,
+      });
+      const r4 = await this.rconClient.sendCommand(`title @a actionbar ${actionbarJson}`);
+      responses.push(r4);
+    }
+
+    return responses;
   }
 
   /**

@@ -5,15 +5,15 @@
       "description": "Spawnea un Zombie cerca del jugador",
       "scaleWithCombo": true,
       "commands": [
-        "title @a title {\"text\":\"¡{user} envió {repeatCount}x Rosa! | ¡Un Zombie aparece junto a {player}!\",\"color\":\"gold\",\"bold\":true}",
+        "title @a title {\"text\":\"{user} · {repeatCount}x Rosa | ¡Zombie junto a {player}!\",\"color\":\"gold\",\"bold\":true}",
         "execute at {player} run summon minecraft:zombie ~ ~ ~"
       ]
     },
     "You're awesome": {
-      "description": "Da una Manzana Dorada curativa al jugador",
+      "description": "Spawnea un Esqueleto cerca del jugador",
       "scaleWithCombo": true,
       "commands": [
-        "title @a title {\"text\":\"¡{user} envió {repeatCount}x You're awesome! | Dando Manzana Dorada a {player}.\",\"color\":\"gold\",\"bold\":true}",
+        "title @a title {\"text\":\"{user} · {repeatCount}x Awesome | ¡Esqueleto junto a {player}!\",\"color\":\"gold\",\"bold\":true}",
         "execute at {player} run summon minecraft:skeleton ~ ~ ~"
       ]
     },
@@ -21,15 +21,15 @@
       "description": "Spawnea un Creeper cerca del jugador",
       "scaleWithCombo": true,
       "commands": [
-        "title @a title {\"text\":\"¡{user} envió {repeatCount}x GG! | ¡Cuidado con el Creeper, {player}!\",\"color\":\"gold\",\"bold\":true}",
+        "title @a title {\"text\":\"{user} · {repeatCount}x GG | ¡Cuidado con el Creeper, {player}!\",\"color\":\"gold\",\"bold\":true}",
         "execute at {player} run summon minecraft:creeper ~ ~ ~"
       ]
     },
     "Finger Heart": {
-      "description": "Da una Espada de Diamante al jugador",
+      "description": "Spawnea un Vindicator cerca del jugador",
       "scaleWithCombo": false,
       "commands": [
-        "title @a title {\"text\":\"¡{user} envió un Corazón! | {player} recibe una Espada de Diamante.\",\"color\":\"gold\",\"bold\":true}",
+        "title @a title {\"text\":\"{user} · Corazón | ¡Vindicator junto a {player}!\",\"color\":\"gold\",\"bold\":true}",
         "execute at {player} run summon minecraft:vindicator ~ ~ ~"
       ]
     },
@@ -37,7 +37,7 @@
       "description": "Spawnea una horda de 2 Esqueletos y 1 Breeze",
       "scaleWithCombo": true,
       "commands": [
-        "title @a title {\"text\":\"¡ALERTA! ¡{user} lanzó una Dona! | ¡Emboscada contra {player}!\",\"color\":\"gold\",\"bold\":true}",
+        "title @a title {\"text\":\"{user} · {repeatCount}x Dona | ¡Emboscada contra {player}!\",\"color\":\"gold\",\"bold\":true}",
         "execute at {player} run summon minecraft:skeleton ~ ~ ~",
         "execute at {player} run summon minecraft:skeleton ~ ~ ~",
         "execute at {player} run summon minecraft:breeze ~ ~ ~"
@@ -47,7 +47,7 @@
       "description": "Jefe letal: Invoca un Warden junto al jugador",
       "scaleWithCombo": false,
       "commands": [
-        "title @a title {\"text\":\"¡PELIGRO EXTREMO! | ¡{user} invocó un WARDEN para {player}!\",\"color\":\"gold\",\"bold\":true}",
+        "title @a title {\"text\":\"¡WARDEN INVOCADO! | {user} lanzó un Corgi contra {player}\",\"color\":\"gold\",\"bold\":true}",
         "execute at {player} run summon minecraft:warden ~ ~ ~"
       ]
     }
@@ -57,7 +57,7 @@
       "enabled": true,
       "everyLikes": 100,
       "commands": [
-        "title @a title {\"text\":\"¡Meta de 100 Likes gracias a {user}! | ¡Sorpresa para {player}!\",\"color\":\"gold\",\"bold\":true}",
+        "title @a title {\"text\":\"¡+100 LIKES! ({user}) | ¡2x Cave Spider para {player}!\",\"color\":\"gold\",\"bold\":true}",
         "execute at {player} run summon minecraft:cave_spider ~ ~ ~",
         "execute at {player} run summon minecraft:cave_spider ~ ~ ~"
       ]
@@ -65,7 +65,7 @@
     "follow": {
       "enabled": true,
       "commands": [
-        "title @a title {\"text\":\"¡Gracias por seguirme, {user}! | Spawneando un Creeper sorpresa...\",\"color\":\"gold\",\"bold\":true}",
+        "title @a title {\"text\":\"¡Nuevo Follow: {user}! | Spawneando Creeper sorpresa...\",\"color\":\"gold\",\"bold\":true}",
         "execute at {player} run summon minecraft:creeper ~ ~ ~"
       ]
     }
@@ -74,7 +74,7 @@
     "enabled": true,
     "description": "Acción por defecto si envían un regalo que no está en la lista",
     "commands": [
-      "title @a title {\"text\":\"¡Gracias {user}! | Envió {repeatCount}x {giftName}\",\"color\":\"gold\",\"bold\":true}",
+      "title @a title {\"text\":\"{user} · {repeatCount}x {giftName} | ¡Gracias por el regalo!\",\"color\":\"gold\",\"bold\":true}",
       "execute at {player} run summon minecraft:skeleton ~ ~ ~"
     ]
   }
