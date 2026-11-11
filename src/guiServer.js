@@ -7,11 +7,25 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { TikTokLiveConnection } from 'tiktok-live-connector';
+import { TikTokLiveConnection, WebcastEvent, ControlEvent, RouteConfig } from 'tiktok-live-connector';
 import { MinecraftRconClient } from './rconClient.js';
 import { GiftHandler, getWritableConfigPath } from './giftHandler.js';
 import { fetchMinecraftMobs, fetchMinecraftItems, fetchTikTokGifts } from './catalogService.js';
 import { MinecraftServerManager } from './minecraftServerManager.js';
+
+// Parche gratuito para consultar gift/list/ sin firma de pago de EulerStream
+RouteConfig.fetchRoomGifts = async ({ webClient, roomId = webClient.roomId }) => {
+  try {
+    const res = await webClient.getJsonObjectFromWebcastApi(
+      'gift/list/',
+      { ...webClient.clientParams, room_id: roomId },
+      false
+    );
+    return res?.data?.gifts || [];
+  } catch {
+    return [];
+  }
+};
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -225,6 +239,95 @@ export async function startGuiServer(options = {}) {
 
   syncRconFromServerProperties();
 
+  // Gestor automático de conexión en tiempo real con TikTok Live (Regalos, Follows y Likes)
+  let activeTikTokConn = null;
+  let activeTikTokUser = '';
+  let isConnectingTikTok = false;
+
+  async function ensureTikTokLiveListener(rawUsername) {
+    if (options.disableTikTokListener) return;
+    const username = String(rawUsername || process.env.TIKTOK_USERNAME || '')
+      .trim()
+      .replace(/^@/, '');
+
+    if (!username || username === 'tu_usuario_tiktok') {
+      if (activeTikTokConn) {
+        try {
+          activeTikTokConn.disconnect();
+        } catch {
+          // Ignorar
+        }
+        activeTikTokConn = null;
+        activeTikTokUser = '';
+      }
+      return;
+    }
+
+    if (activeTikTokConn && activeTikTokUser.toLowerCase() === username.toLowerCase()) {
+      return;
+    }
+
+    if (isConnectingTikTok) return;
+    isConnectingTikTok = true;
+
+    try {
+      if (activeTikTokConn) {
+        try {
+          activeTikTokConn.disconnect();
+        } catch {
+          // Ignorar
+        }
+        activeTikTokConn = null;
+        activeTikTokUser = '';
+      }
+
+      const conn = new TikTokLiveConnection(username, {
+        processInitialData: false,
+        enableExtendedGiftInfo: true,
+      });
+
+      const state = await conn.connect();
+      activeTikTokConn = conn;
+      activeTikTokUser = username;
+
+      console.log(`✅ [TikTok Live] Escuchando eventos en vivo de @${username} (Room ID: ${state.roomId})`);
+      serverManager.appendLog(`[TikTok Live] Conectado al directo de @${username} (Room ID: ${state.roomId})`);
+
+      conn.on(WebcastEvent.GIFT, async (data) => {
+        syncRconFromServerProperties();
+        await giftHandler.handleGift(data);
+      });
+
+      conn.on(WebcastEvent.FOLLOW, async (data) => {
+        syncRconFromServerProperties();
+        await giftHandler.handleFollow(data);
+      });
+
+      conn.on(WebcastEvent.LIKE, async (data) => {
+        syncRconFromServerProperties();
+        await giftHandler.handleLike(data);
+      });
+
+      conn.on(ControlEvent.DISCONNECTED, () => {
+        console.warn(`⚠️ [TikTok Live] Desconectado del directo de @${username}`);
+        if (activeTikTokConn === conn) {
+          activeTikTokConn = null;
+          activeTikTokUser = '';
+        }
+      });
+
+      conn.on(ControlEvent.ERROR, (err) => {
+        console.error('❌ [TikTok Live Error]:', err?.info || err?.exception || err?.message || err);
+      });
+    } catch {
+      // El usuario aún no está en vivo o cerró transmisión; se reintentará automáticamente
+    } finally {
+      isConnectingTikTok = false;
+    }
+  }
+
+  ensureTikTokLiveListener(process.env.TIKTOK_USERNAME);
+
   /**
    * Evalúa en vivo el estado real del servidor RCON de Minecraft
    */
@@ -322,6 +425,9 @@ export async function startGuiServer(options = {}) {
           evaluateRconStatus(),
           checkTikTokLiveStatus(process.env.TIKTOK_USERNAME, force),
         ]);
+        if (tiktokStatus.isLive) {
+          ensureTikTokLiveListener(process.env.TIKTOK_USERNAME);
+        }
         return sendJson(res, 200, {
           ok: true,
           rcon: rconStatus,
@@ -520,6 +626,9 @@ export async function startGuiServer(options = {}) {
           await rconClient.connect();
         }
         updateEnvFile(updates);
+        if (typeof body.tiktokUsername === 'string') {
+          ensureTikTokLiveListener(updates.TIKTOK_USERNAME);
+        }
         return sendJson(res, 200, {
           ok: true,
           env: {

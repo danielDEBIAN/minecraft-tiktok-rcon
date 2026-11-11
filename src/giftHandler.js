@@ -312,16 +312,22 @@ export class GiftHandler {
     const likeConfig = this.config.specialEvents?.likeMilestone;
     if (!likeConfig?.enabled) return { executed: false, responses: [] };
 
-    const likeCount = Number(data.likeCount) || 1;
+    // En tiktok-live-connector v2 (proto v3) la propiedad del lote de likes es `data.count`
+    // mientras que en versiones previas o simulador es `data.likeCount`.
+    const likeCount = Number(data.count ?? data.likeCount) || 1;
     const user = data.user?.nickname || data.user?.uniqueId || data.nickname || data.uniqueId || 'Usuario';
     this.totalLikes += likeCount;
 
-    const step = Number(likeConfig.everyLikes) || 100;
+    const step = Math.max(1, Number(likeConfig.everyLikes) || 100);
     const currentMilestone = Math.floor(this.totalLikes / step);
+
+    console.log(
+      `❤️ [LIKES TIKTOK] +${likeCount} de ${user} (Total sesión: ${this.totalLikes} · Meta cada ${step})`
+    );
 
     if (currentMilestone > this.lastLikeMilestone) {
       this.lastLikeMilestone = currentMilestone;
-      console.log(`\n❤️ [META DE LIKES] ¡Se alcanzaron ${currentMilestone * step} likes acumulados! (Último: ${user})`);
+      console.log(`\n🔥 [META DE LIKES] ¡Se alcanzaron ${currentMilestone * step} likes acumulados! (Último: ${user})`);
 
       const context = { user, giftName: 'Likes', repeatCount: step };
       const responses = [];

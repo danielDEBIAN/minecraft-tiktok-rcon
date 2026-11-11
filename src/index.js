@@ -44,7 +44,7 @@ async function main() {
   console.log('------------------------------------------------------\n');
 
   await rconClient.connect();
-  await startGuiServer({ rconClient, giftHandler });
+  await startGuiServer({ rconClient, giftHandler, disableTikTokListener: true });
 
   if (!tiktokUsername || tiktokUsername === 'tu_usuario_tiktok') {
     console.warn('⚠️ Aún no has configurado tu TIKTOK_USERNAME en el archivo .env o en el panel web.');
