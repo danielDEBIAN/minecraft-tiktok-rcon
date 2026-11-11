@@ -430,13 +430,13 @@
 
           <div class="docs-list">
             <div class="docs-item">
-              <h4>🎛️ 1. Mis Reglas Configuradas</h4>
+              <h4>🎛️ 1. Mis Reglas Configuradas y Layout OBS (9:16)</h4>
               <p>
-                Es tu panel principal de eventos activos. Aquí ves todos los regalos de TikTok que ya tienen asignado un <strong>Mob</strong> o un <strong>Ítem</strong>, además de los 3 eventos especiales del directo:
+                Es tu panel principal de eventos activos. Aquí ves todos los regalos de TikTok que ya tienen asignado un <strong>Mob</strong> o un <strong>Ítem</strong>, el botón <strong>🖼️ Descargar Layout OBS (9:16)</strong> para generar tu overlay vertical <code>1080×1920</code> con ventana transparente y los 3 eventos especiales del directo:
               </p>
               <ul>
                 <li><strong>➕ Nuevo Seguidor (Follow):</strong> Se ejecuta cuando alguien sigue tu cuenta en vivo.</li>
-                <li><strong>❤️ Meta de Likes:</strong> Se activa automáticamente cada cierta cantidad de Likes acumulados (ej. cada 100 Likes).</li>
+                <li><strong>❤️ Meta de Likes:</strong> Se activa automáticamente cada cierta cantidad de Likes acumulados en la sesión (por defecto cada 100 Likes, sin necesidad de configurar metas dentro de TikTok).</li>
                 <li><strong>🎲 Regalo por Defecto:</strong> Acción comodín cuando te envían un regalo que no tiene su propia regla.</li>
               </ul>
             </div>
@@ -509,8 +509,8 @@
                   <span>Entrega una o varias unidades de un ítem al inventario del jugador (ej. <code>give {player} minecraft:diamond_sword 1</code> o <code>give {player} minecraft:golden_apple 5</code>).</span>
                 </div>
                 <div>
-                  <code>title @a title {"text":"&lt;Título&gt; | &lt;Subtítulo&gt;","color":"gold","bold":true}</code>
-                  <span>Muestra un Título grande y centrado en la pantalla de Minecraft para que se vea claramente en el stream.</span>
+                  <code>title @a subtitle {"text":"&lt;Título&gt;","color":"gold","bold":true}</code> + <code>title @a actionbar {"text":"&lt;Detalle&gt;","color":"yellow","bold":true}</code>
+                  <span>Muestra alertas compactas en el centro de la pantalla (50% más pequeñas que el título gigante estándar) para que entren completas en el recorte vertical 9:16 de TikTok Live.</span>
                 </div>
                 <div>
                   <code>op &lt;Jugador&gt;</code>
@@ -585,6 +585,20 @@
               Todas tus reglas de regalos, mobs e ítems se guardan automáticamente en el archivo <code>config/gifts.json</code> (o en <code>~/.config/minecraft-tiktok-rcon/gifts.json</code> si usas el instalador empaquetado) y se recargan en caliente sin necesidad de reiniciar el servidor de Minecraft.
             </p>
           </div>
+
+          <div class="faq-card">
+            <h4>❓ ¿Tengo que configurar la Meta de Likes dentro de TikTok?</h4>
+            <p>
+              <strong>No.</strong> La aplicación lleva su propio contador en tiempo real sumando todas las ráfagas de likes (<code>data.count</code>) que envían los espectadores durante tu transmisión. Cada vez que el contador cruza el múltiplo configurado (por defecto cada <strong>100 Likes</strong>), entrega la recompensa en Minecraft automáticamente.
+            </p>
+          </div>
+
+          <div class="faq-card">
+            <h4>❓ ¿Cómo uso el Layout Vertical 9:16 en OBS Studio o TikTok Live Studio?</h4>
+            <p>
+              Haz clic en <strong>🖼️ Descargar Layout OBS (9:16)</strong> en la pestaña <strong>🎛️ Mis Reglas Configuradas</strong> (o usa <code>public/obs-layout-vertical.png</code>). Agrega la imagen como capa superior en tu lienzo <code>1080×1920</code> y coloca la captura de tu ventana de Minecraft justo detrás del recorte transparente central.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -609,7 +623,7 @@
           <div class="faq-card">
             <h4>📦 Librerías Open Source y Tipografías</h4>
             <p>
-              Construido sobre <strong>Node.js</strong> y <strong>Electron</strong> utilizando los paquetes de código abierto <code>tiktok-live-connector</code> (Zerody), <code>rcon-client</code> y <code>dotenv</code>. Las fuentes tipográficas <em>Cinzel</em> e <em>Inter</em> son provistas por <strong>Google Fonts</strong> bajo licencia abierta (OFL).
+              Construido sobre <strong>Node.js</strong> y <strong>Electron</strong> utilizando los paquetes de código abierto <code>tiktok-live-connector</code> (Zerody), <code>rcon-client</code> y <code>dotenv</code>. Las fuentes tipográficas <em>Silkscreen</em>, <em>Inter</em> y <em>JetBrains Mono</em> son provistas por <strong>Google Fonts</strong> bajo licencia abierta (OFL).
             </p>
           </div>
 

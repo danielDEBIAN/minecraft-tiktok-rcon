@@ -1,6 +1,6 @@
 {
   "name": "minecraft-tiktok-rcon",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Puente y estudio visual 100% gratuito entre TikTok Live y Minecraft: Java Edition mediante RCON para spawnear mobs y dar ítems en tiempo real.",
   "type": "module",
   "main": "src/electronMain.js",
@@ -9,6 +9,7 @@
     "gui": "node src/guiServer.js",
     "app": "bash ./launch-app.sh",
     "desktop": "electron src/electronMain.js",
+    "obs:layout": "python3 src/generateObsLayout.py",
     "dist:linux": "npx electron-builder --linux AppImage --publish never",
     "dist:win": "npx electron-builder --win portable --publish never",
     "simulate": "node src/simulate.js"
